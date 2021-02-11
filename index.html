@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<title>城通网盘解析器</title>
+
+<head>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <script>
+
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/material-components-web@6.0.0/dist/material-components-web.min.css"
+        rel="stylesheet">
+    <script
+        src="https://cdn.jsdelivr.net/npm/material-components-web@6.0.0/dist/material-components-web.min.js"></script>
+</head>
+
+<body>
+    <H2>请输入链接和密码(可选)</H2>
+    <H4>下载地址有一定有效期,不可用于分享</H4>
+    <label style="width:100%;" class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
+        <input id="link" class="mdc-text-field__input" aria-labelledby="my-label-id">
+        <span class="mdc-notched-outline">
+            <span class="mdc-notched-outline__leading"></span>
+            <span class="mdc-notched-outline__notch">
+                <span class="mdc-floating-label" id="my-label-id">分享链接</span>
+            </span>
+            <span class="mdc-notched-outline__trailing"></span>
+        </span>
+    </label>
+    <br>
+    <br>
+    <label style="width:100%;" class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
+        <input id="passcode" class="mdc-text-field__input" aria-labelledby="my-label-id">
+        <span class="mdc-notched-outline">
+            <span class="mdc-notched-outline__leading"></span>
+            <span class="mdc-notched-outline__notch">
+                <span class="mdc-floating-label" id="my-label-id">密码(留空则使用琴梨梨通用密码)</span>
+            </span>
+            <span class="mdc-notched-outline__trailing"></span>
+        </span>
+    </label>
+    <br>
+    <br>
+    <button onclick="getInfo();" class="mdc-button foo-button1">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">获取下载地址</span>
+    </button>
+    <br>
+    <H4 id="filename"></H4>
+    <H4 id="filesize"></H4>
+    <H4 id="filetime"></H4>
+    <p id="dlURL"></p>
+    <button onclick="dlFile();" id="dlbtn" style="display:none;" class="mdc-button foo-button2">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">下载文件</span>
+    </button>
+    <script>
+        var link;
+        var fileid;
+        var jsonurl;
+        var passcodeArgu="";
+        var jsonText;
+        var jsonText2;
+        var xhr;
+        var dlURL;
+        var getInfo = function () {
+            link = document.getElementById("link").value;
+            fileid = link.slice(link.indexOf("/f/") + 3);
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    jsonText = JSON.parse(xhr.responseText);
+                    if(jsonText.code==200){
+                    document.getElementById("filename").innerText = "文件名称:" + jsonText.file_name;
+                    document.getElementById("filesize").innerText = "文件大小:" + jsonText.file_size;
+                    document.getElementById("filetime").innerText = "文件时间:" + jsonText.file_time;
+                    document.getElementById("dlURL").innerText = "正在获取下载地址...";
+                    getURL();
+                    }else{
+                        document.getElementById("filename").innerText = "文件请求失败,请检查地址或视力";
+                    }
+                }
+            };
+            if (document.getElementById("passcode").value) {
+                passcodeArgu = "&passcode=" + document.getElementById("passcode").value;
+            }else{
+                passcodeArgu = "&passcode=547873715"
+            }
+            jsonurl = "https://webapi.ctfile.com/getfile.php?path=f&f=" + fileid + passcodeArgu + "&token=false&r=" + Math.random() + "&ref=https://ctfile.qinlili.bid"
+            xhr.open('get', jsonurl);
+            //xhr.setRequestHeader('X-Referer', link);
+            xhr.send(null);
+        }
+        var getURL = function () {
+            jsonurl = "https://webapi.ctfile.com/get_file_url.php?uid=" + jsonText.userid + "&fid=" + jsonText.file_id + "&file_chk=" + jsonText.file_chk + "&app=0&acheck=2&rd=" + Math.random()
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    jsonText2 = JSON.parse(xhr.responseText);
+                    dlURL = jsonText2.downurl;
+                    document.getElementById("dlURL").innerText = "下载地址:" + dlURL;
+                    document.getElementById("dlbtn").style.display = "block";
+                }
+            };
+            xhr.open('get', jsonurl);
+            xhr.send(null);
+        }
+        var dlFile = function () {
+            funDownload(dlURL, jsonText.file_name);
+        }
+
+    </script>
+    <script>
+        window.mdc.autoInit();
+        mdc.ripple.MDCRipple.attachTo(document.querySelector('.foo-button1'));
+        mdc.ripple.MDCRipple.attachTo(document.querySelector('.foo-button2'));
+        var getRandomColor = function () {
+            return '#' + (function (color) {
+                return (color += 'abcdef'[Math.floor(Math.random() * 6)])
+                    && (color.length == 6) ? color : arguments.callee(color);
+            })('');
+        }
+        function strip(num, precision = 10) {
+            return +parseFloat(num.toPrecision(precision));
+        }
+        function funDownload(content, filename) {
+
+            var eleLink = document.createElement('a');
+            eleLink.download = filename;
+            eleLink.style.display = 'none';
+            eleLink.href = content;
+            document.body.appendChild(eleLink);
+            eleLink.click();
+            document.body.removeChild(eleLink);
+        };
+    </script>
+</body>
+
+</html>
