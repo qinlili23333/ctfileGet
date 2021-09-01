@@ -1,129 +1,138 @@
 <!DOCTYPE html>
 <html>
 <title>城通网盘解析器</title>
-
 <head>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
 </head>
-
 <body id="container" style="width:100%;height:100%;">
-     <div style="position: absolute;	left: 50%;top: 50%;transform: translate(-50%,-50%);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="128px" height="128px" version="1" viewBox="0 0 16 16"
-                id="loadsvg">
-                <style>
-                    @keyframes rotate {
-                        0% {
-                            transform: rotate(0deg)
-                        }
-                        to {
-                            transform: rotate(360deg)
-                        }
+    <div style="position: absolute;	left: 50%;top: 50%;transform: translate(-50%,-50%);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="128px" height="128px" version="1" viewBox="0 0 16 16"
+            id="loadsvg">
+            <style>
+                @keyframes rotate {
+                    0% {
+                        transform: rotate(0deg)
                     }
-                    @keyframes fillunfill {
-                        0% {
-                            stroke-dashoffset: 32.3
-                        }
-                        50% {
-                            stroke-dashoffset: 0
-                        }
-                        to {
-                            stroke-dashoffset: -31.9
-                        }
+
+                    to {
+                        transform: rotate(360deg)
                     }
-                    @keyframes rot {
-                        0% {
-                            transform: rotate(0deg)
-                        }
-                        to {
-                            transform: rotate(-360deg)
-                        }
+                }
+
+                @keyframes fillunfill {
+                    0% {
+                        stroke-dashoffset: 32.3
                     }
-                    @keyframes colors {
-                        0%,
-                        to {
-                            stroke: #e87a90
-                        }
+
+                    50% {
+                        stroke-dashoffset: 0
                     }
-                </style>
-                <g
-                    style="animation-duration:1568.63ms;animation-iteration-count:infinite;animation-name:rotate;animation-timing-function:linear;transform-origin:50% 50%;width:16px;height:16px">
-                    <path fill="none" d="M8 1.125A6.875 6.875 0 1 1 1.125 8" stroke-width="1.25" stroke-linecap="square"
-                        style="animation-duration:1333ms,5332ms,5332ms;animation-fill-mode:forwards;animation-iteration-count:infinite,infinite,infinite;animation-name:fillunfill,rot,colors;animation-play-state:running,running,running;animation-timing-function:cubic-bezier(.4,0,.2,1),steps(4),linear;transform-origin:50% 50%"
-                        stroke-dasharray="32.4" stroke-dashoffset="32.4" />
-                </g>
-            </svg>
-            <H3 id="loadtext">正在加载</H3>
-        </div>
+
+                    to {
+                        stroke-dashoffset: -31.9
+                    }
+                }
+
+                @keyframes rot {
+                    0% {
+                        transform: rotate(0deg)
+                    }
+
+                    to {
+                        transform: rotate(-360deg)
+                    }
+                }
+
+                @keyframes colors {
+
+                    0%,
+                    to {
+                        stroke: #e87a90
+                    }
+                }
+            </style>
+            <g
+                style="animation-duration:1568.63ms;animation-iteration-count:infinite;animation-name:rotate;animation-timing-function:linear;transform-origin:50% 50%;width:16px;height:16px">
+                <path fill="none" d="M8 1.125A6.875 6.875 0 1 1 1.125 8" stroke-width="1.25" stroke-linecap="square"
+                    style="animation-duration:1333ms,5332ms,5332ms;animation-fill-mode:forwards;animation-iteration-count:infinite,infinite,infinite;animation-name:fillunfill,rot,colors;animation-play-state:running,running,running;animation-timing-function:cubic-bezier(.4,0,.2,1),steps(4),linear;transform-origin:50% 50%"
+                    stroke-dasharray="32.4" stroke-dashoffset="32.4" />
+            </g>
+        </svg>
+        <H3 id="loadtext">正在加载</H3>
+    </div>
     </div>
 </body>
-    <script>
-        function funDownload(content, filename) {
-            var eleLink = document.createElement('a');
-            eleLink.download = filename;
-            eleLink.style.display = 'none';
-            eleLink.href = content;
-            document.body.appendChild(eleLink);
-            eleLink.click();
-            document.body.removeChild(eleLink);
-        };
-       var searchParams = new URLSearchParams(document.location.search);
-       var fileid=searchParams.get("file");
-      var password="547873715"
-      if(searchParams.get("pass")){
-        password=searchParams.get("pass")
-      }
-      function t(text){
-        document.getElementById("loadtext").innerText=text;
-      }
-      t("读取文件信息")
-      var jsonurl =
-      "https://webapi.ctfile.com/getfile.php?path=f&f=" +
-      fileid +
-      "&passcode=" +
-      password +
-      "&token=false&r=" +
-      Math.random() +
-      "&ref=https://ctfile.qinlili.bid";
-    const response = await fetch(jsonurl, {
-      headers: {
-        origin: "https://ctfile.qinlili.bid",
-        referer: "https://ctfile.qinlili.bid",
-      },
-    });
-    var jsonFile = await response.text();
-    console.log(jsonFile)
-    var jsonText
-    try{jsonText = JSON.parse(jsonFile);}
-    catch{
-        t("解析失败，文件不存在或密码错误")
+<script>
+    function funDownload(content, filename) {
+        var eleLink = document.createElement('a');
+        eleLink.download = filename;
+        eleLink.style.display = 'none';
+        eleLink.href = content;
+        document.body.appendChild(eleLink);
+        eleLink.click();
+        document.body.removeChild(eleLink);
+    };
+    var searchParams = new URLSearchParams(document.location.search);
+    var fileid = searchParams.get("file");
+    var password = "547873715"
+    if (searchParams.get("pass")) {
+        password = searchParams.get("pass")
     }
-     t("生成下载链接")
-    var jsonurl2 =
-      "https://webapi.ctfile.com/get_file_url.php?uid=" +
-      jsonText.userid +
-      "&fid=" +
-      jsonText.file_id +
-      "&file_chk=" +
-      jsonText.file_chk +
-      "&app=0&acheck=2&rd=" +
-      Math.random();
-    const response2 = await fetch(jsonurl2, {
-      headers: {
-        origin: "https://ctfile.qinlili.bid",
-        referer: "https://ctfile.qinlili.bid",
-      },
-    });
-    var jsonFile2 = await response2.text();
-    console.log(jsonFile2)
-    var jsonText2 
-    try{
-        jsonText2 = JSON.parse(jsonFile2);
-       t("发起下载");
-            funDownload(jsonText2.downurl, jsonText.file_name);}
-    catch{
-        t("解析失败，文件不存在或密码错误")
+    function t(text) {
+        document.getElementById("loadtext").innerText = text;
     }
-   
-        
-    </script>
+    async function dl() {
+        t("读取文件信息")
+        var jsonurl =
+            "https://webapi.ctfile.com/getfile.php?path=f&f=" +
+            fileid +
+            "&passcode=" +
+            password +
+            "&token=false&r=" +
+            Math.random() +
+            "&ref=https://ctfile.qinlili.bid";
+        const response = await fetch(jsonurl, {
+            headers: {
+                origin: "https://ctfile.qinlili.bid",
+                referer: "https://ctfile.qinlili.bid",
+            },
+        });
+        var jsonFile = await response.text();
+        console.log(jsonFile)
+        var jsonText
+        try { jsonText = JSON.parse(jsonFile); }
+        catch {
+            t("解析失败，文件不存在或密码错误")
+        }
+        t("生成下载链接")
+        var jsonurl2 =
+            "https://webapi.ctfile.com/get_file_url.php?uid=" +
+            jsonText.userid +
+            "&fid=" +
+            jsonText.file_id +
+            "&file_chk=" +
+            jsonText.file_chk +
+            "&app=0&acheck=2&rd=" +
+            Math.random();
+        const response2 = await fetch(jsonurl2, {
+            headers: {
+                origin: "https://ctfile.qinlili.bid",
+                referer: "https://ctfile.qinlili.bid",
+            },
+        });
+        var jsonFile2 = await response2.text();
+        console.log(jsonFile2)
+        var jsonText2
+        try {
+            jsonText2 = JSON.parse(jsonFile2);
+            t("发起下载");
+            funDownload(jsonText2.downurl, jsonText.file_name);
+        }
+        catch {
+            t("解析失败，文件不存在或密码错误")
+        }
+    }
+    dl()
+</script>
+
 </html>
