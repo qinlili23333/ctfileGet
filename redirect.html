@@ -1,13 +1,23 @@
 <!DOCTYPE html>
 <html>
-<title>城通网盘解析器</title>
+<title>城通网盘动态解析</title>
+
 <head>
+    <meta name="description" content="解析城通网盘直连地址" />
+    <link rel="canonical" href="https://ctfile.qinlili.bid/redirect.html" />
+    <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <link rel="manifest" href="./manifest.json">
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#FFFFFF">
+    <link rel="icon" href="./icon.png">
+    <script src="./ctget.js"></script>
 </head>
+
 <body id="container" style="width:100%;height:100%;">
-    <div style="position: absolute;	left: 50%;top: 50%;transform: translate(-50%,-50%);">
+    <div style="position: absolute;	left: 50%;top: 50%;width:328px;transform: translate(-50%,-50%);">
         <svg xmlns="http://www.w3.org/2000/svg" width="128px" height="128px" version="1" viewBox="0 0 16 16"
-            id="loadsvg">
+            style="padding-left:100px;padding-right: 100px;padding-bottom: 50px;" id="loadsvg">
             <style>
                 @keyframes rotate {
                     0% {
@@ -58,12 +68,12 @@
                     stroke-dasharray="32.4" stroke-dashoffset="32.4" />
             </g>
         </svg>
-        <H3 id="loadtext">正在加载</H3>
+        <H3 id="loadtext" style="text-align:center;width:100%;">正在获取下载地址</H3>
     </div>
     </div>
 </body>
 <script>
-    function funDownload(content, filename) {
+    const funDownload = (content, filename) => {
         var eleLink = document.createElement('a');
         eleLink.download = filename;
         eleLink.style.display = 'none';
@@ -72,67 +82,22 @@
         eleLink.click();
         document.body.removeChild(eleLink);
     };
-    var searchParams = new URLSearchParams(document.location.search);
-    var fileid = searchParams.get("file");
+    const searchParams = new URLSearchParams(document.location.search);
+    const fileid = searchParams.get("file");
     var password = "547873715"
     if (searchParams.get("pass")) {
         password = searchParams.get("pass")
     }
-    function t(text) {
-        document.getElementById("loadtext").innerText = text;
-    }
-    async function dl() {
-        t("读取文件信息")
-        var jsonurl =
-            "https://webapi.ctfile.com/getfile.php?path=f&f=" +
-            fileid +
-            "&passcode=" +
-            password +
-            "&token=false&r=" +
-            Math.random() +
-            "&ref=https://ctfile.qinlili.bid";
-        const response = await fetch(jsonurl, {
-            headers: {
-                origin: "https://ctfile.qinlili.bid",
-                referer: "https://ctfile.qinlili.bid",
-            },
-        });
-        var jsonFile = await response.text();
-        console.log(jsonFile)
-        var jsonText
-        try { jsonText = JSON.parse(jsonFile); }
-        catch {
-            t("解析失败，文件不存在或密码错误")
-        }
-        t("生成下载链接")
-        var jsonurl2 =
-            "https://webapi.ctfile.com/get_file_url.php?uid=" +
-            jsonText.userid +
-            "&fid=" +
-            jsonText.file_id +
-            "&file_chk=" +
-            jsonText.file_chk +
-            "&app=0&acheck=2&rd=" +
-            Math.random();
-        const response2 = await fetch(jsonurl2, {
-            headers: {
-                origin: "https://ctfile.qinlili.bid",
-                referer: "https://ctfile.qinlili.bid",
-            },
-        });
-        var jsonFile2 = await response2.text();
-        console.log(jsonFile2)
-        var jsonText2
-        try {
-            jsonText2 = JSON.parse(jsonFile2);
-            t("发起下载");
-            funDownload(jsonText2.downurl, jsonText.file_name);
-        }
-        catch {
-            t("解析失败，文件不存在或密码错误")
+    const dl = async () => {
+        const fileInfo = await ctfile.getByID(fileid, password)
+        if (fileInfo.success) {
+            document.getElementById("loadtext").innerText = "正在发起下载"
+            funDownload(fileInfo.link, fileInfo.name)
+        } else {
+            document.getElementById("loadtext").innerText = "出错了，错误原因是:" + fileInfo.errormsg;
         }
     }
-    dl()
+    dl();
 </script>
 
 </html>

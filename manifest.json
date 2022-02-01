@@ -1,0 +1,21 @@
+{
+    "dir": "ltr",
+    "scope": "/",
+    "name": "城通网盘解析器",
+    "short_name": "城通解析",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "id": "/",
+    "lang": "cn",
+    "orientation": "portrait-primary",
+    "background_color": "#FFFFFF",
+    "theme_color": "#FFFFFF",
+    "description": "解析城通网盘直连地址"
+}
