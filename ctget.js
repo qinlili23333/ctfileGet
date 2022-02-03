@@ -1,12 +1,12 @@
 window.ctfile = {
-    version: () => { return "2.0.0" },
+    version: () => { return "2.0.1" },
     getByLink: (link, password) => {
         return ctfile.getByID(link.slice(link.indexOf("/f/") + 3), password);
     },
     getByID: async (fileid, password) => {
         const origin = () => {
             //兼容node.js
-            if (document) {
+            if (document && !(document.location.origin == 'file://')) {
                 return document.location.origin;
             } else {
                 return "https://ctfile.qinlili.workers.dev";
