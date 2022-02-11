@@ -1,5 +1,5 @@
 window.ctfile = {
-    version: "2.0.4-button",
+    version: "2.1.0-button",
     IconPack: {
         load: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0iI2U4N2E5MCI+DQogICAgPHBhdGggb3BhY2l0eT0iLjI1IiBkPSJNMTYgMCBBMTYgMTYgMCAwIDAgMTYgMzIgQTE2IDE2IDAgMCAwIDE2IDAgTTE2IDQgQTEyIDEyIDAgMCAxIDE2IDI4IEExMiAxMiAwIDAgMSAxNiA0IiAvPg0KICAgIDxwYXRoIGQ9Ik0xNiAwIEExNiAxNiAwIDAgMSAzMiAxNiBMMjggMTYgQTEyIDEyIDAgMCAwIDE2IDR6Ij4NCiAgICAgICAgPGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIiB0eXBlPSJyb3RhdGUiIGZyb209IjAgMTYgMTYiIHRvPSIzNjAgMTYgMTYiIGR1cj0iMnMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiAvPg0KICAgIDwvcGF0aD4NCjwvc3ZnPg==",
         fail: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0NEgzOEMzOS4xMDQ2IDQ0IDQwIDQzLjEwNDYgNDAgNDJWMTRMMzEgNEgxMEM4Ljg5NTQzIDQgOCA0Ljg5NTQzIDggNlY0MkM4IDQzLjEwNDYgOC44OTU0MyA0NCAxMCA0NFoiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTggMjJMMzAgMzQiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzAgMjJMMTggMzQiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzAgNFYxNEg0MCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==",
@@ -11,13 +11,14 @@ window.ctfile = {
         let dlicon = document.createElement("img");
         dlicon.style = "margin: 2px;width: 28px;height: 28px;transition: filter 0.5s;"
         btn.appendChild(dlicon);
-        let dltitle = document.createElement("h3");
-        dltitle.style = "margin:0px;text-align: center;width: 100%;transition: color 0.5s;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;";
+        let dltitle = document.createElement("h2");
+        dltitle.style = "font-size: 1.5em !important;margin:0px;text-align: center;width: 100%;transition: color 0.5s;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;";
         dltitle.innerText = "请稍等";
         btn.appendChild(dltitle);
         dlicon.src = ctfile.IconPack.load;
         let initBtn = async (btn, icon, title, fileid, password) => {
             let fileInfo = await ctfile.getByID(fileid, password);
+            let isOutDate = false;
             console.log(fileInfo);
             if (fileInfo.success) {
                 icon.src = ctfile.IconPack.down;
@@ -26,20 +27,34 @@ window.ctfile = {
                 btn.title = fileInfo.name;
                 title.innerText = fileInfo.size;
                 btn.addEventListener("mouseenter", event => { event.path[0].style.backgroundColor = "#86C166"; })
-                btn.addEventListener("mouseleave", event => { event.path[0].style.backgroundColor = "#A8D8B9"; })
+                btn.addEventListener("mouseleave", event => { event.path[0].style.backgroundColor = isOutDate ? "#EB7A77" : "#A8D8B9"; })
                 btn.addEventListener("click", () => {
-                    let eleLink = document.createElement('a');
-                    eleLink.download = fileInfo.name;
-                    eleLink.style.display = 'none';
-                    eleLink.href = fileInfo.link;
-                    document.body.appendChild(eleLink);
-                    eleLink.click();
-                    document.body.removeChild(eleLink);
+                    if (isOutDate) {
+                        btn.style.backgroundColor = "";
+                        dlicon.src = ctfile.IconPack.load;
+                        dltitle.innerText = "请稍等";
+                        initBtn(btn, dlicon, dltitle, fileid, password);
+                    } else {
+                        let eleLink = document.createElement('a');
+                        eleLink.download = fileInfo.name;
+                        eleLink.style.display = 'none';
+                        eleLink.href = fileInfo.link;
+                        document.body.appendChild(eleLink);
+                        eleLink.click();
+                        document.body.removeChild(eleLink);
+                    }
                 })
+                setTimeout(() => {
+                    icon.src = ctfile.IconPack.fail;
+                    title.innerText = "链接已过期";
+                    btn.style.backgroundColor = "#EB7A77";
+                    btn.style.cursor = "not-allowed";
+                    isOutDate = true;
+                }, 18000000)
             } else {
                 icon.src = ctfile.IconPack.fail;
                 title.innerText = "下载不可用";
-                btn.style.backgroundColor = "#EB7A77"
+                btn.style.backgroundColor = "#EB7A77";
                 btn.style.cursor = "not-allowed";
                 btn.title = fileInfo.errormsg;
             }
