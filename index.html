@@ -27,6 +27,12 @@
     <br>
     <H2>请输入链接和密码(可选)</H2>
     <H4>下载地址有一定有效期,不可用于分享</H4>
+    <button onclick="readClipboard();" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">读取剪贴板</span>
+    </button>
+    <br>
+    <br>
     <label style="width:100%;" class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
         <input id="link" class="mdc-text-field__input" aria-labelledby="my-label-id">
         <span class="mdc-notched-outline">
@@ -74,6 +80,25 @@
         <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label">本项目已开源</span>
     </button>
+    <div class="mdc-dialog">
+        <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
+                aria-describedby="my-dialog-content">
+                <div class="mdc-dialog__content" id="my-dialog-content">
+                    <h5>无法从剪贴板读取链接和密码</h5>
+                    <div>期望的文本形式类似于“https://url76.ctfile.com/f/20044976-553638227-3a47df 密码4718”</div>
+                    <div>请尝试重新复制或者手动填入</div>
+                </div>
+                <div class="mdc-dialog__actions">
+                    <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="discard">
+                        <div class="mdc-button__ripple"></div>
+                        <span class="mdc-button__label">好的</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </div>
     <script>
         var REFERRER_BLACKLIST = ['https://www.qvocd.cc/', 'https://funletu.com/'];
         if (REFERRER_BLACKLIST.includes(document.referrer)) {
@@ -110,6 +135,28 @@
         }
         const dlFile = () => {
             funDownload(dlURL, jsonText.file_name);
+        }
+        const readClipboard = async () => {
+            const log = console.log.bind(console)
+            const text = await navigator.clipboard.readText();
+            const urlPattern = /(https:\/\/)?[a-z0-9]+\.ctfile\.com\/[a-z]\/([\da-z]+-[a-z\d]+-[a-z\d]+)/;
+            const pwPattern = /\d{4}/
+            const $link = document.querySelector("#link")
+            const $passcode = document.querySelector("#passcode")
+
+            try {
+                const link = text.match(urlPattern);
+                $link.focus()
+                $link.value = link[0];
+                const rawPassword = text.split("密码")[1]
+                const password = rawPassword.match(pwPattern);
+                $passcode.focus()
+                $passcode.value = password[0];
+                await getInfo()
+            } catch (e) {
+                const dialog = new window.mdc.dialog.MDCDialog(document.querySelector('.mdc-dialog'));
+                dialog.open()
+            }
         }
 
     </script>
