@@ -25,6 +25,11 @@
         <span class="mdc-button__label">体验船新按钮版</span>
     </button>
     <br>
+    <button onclick="document.location.href='./history.html'" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">查看历史记录</span>
+    </button>
+    <br>
     <H2>请输入链接和密码(可选)</H2>
     <H4>下载地址有一定有效期,不可用于分享</H4>
     <button onclick="readClipboard();" class="mdc-button foo-button">
@@ -129,6 +134,24 @@
                 document.getElementById("filetime").innerText = "文件时间:" + fileInfo.time;
                 document.getElementById("dlURL").innerText = "下载地址:" + fileInfo.link;
                 document.getElementById("dlbtn").style.display = "block";
+                const record = {
+                    link: document.getElementById("link").value,
+                    password,
+                    queryTime: new Date().toLocaleString(),
+                    name: fileInfo.name,
+                    size: fileInfo.size,
+                    time: fileInfo.time,
+                }
+                const store = localStorage.getItem("store")
+                let records = JSON.parse(store);
+
+                if (store && Array.isArray(records)) {
+                    records = records.filter(r => r.link !== record.link)
+                    records.push(record);
+                    localStorage.setItem("store", JSON.stringify(records));
+                } else {
+                    localStorage.setItem("store", JSON.stringify([record]))
+                }
             } else {
                 document.getElementById("filename").innerText = "出错了，错误原因是:" + fileInfo.errormsg;
             }
