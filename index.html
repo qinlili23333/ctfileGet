@@ -161,24 +161,29 @@
         }
         const readClipboard = async () => {
             const log = console.log.bind(console)
-            const text = await navigator.clipboard.readText();
-            const urlPattern = /(https:\/\/)?[a-z0-9]+\.ctfile\.com\/[a-z]\/([\da-z]+-[a-z\d]+-[a-z\d]+)/;
-            const pwPattern = /\d{4}/
-            const $link = document.querySelector("#link")
-            const $passcode = document.querySelector("#passcode")
+            const text = await navigator.clipboard.readText().catch(err => {
+                alert("读取剪贴板失败了喵！你是否拒绝了剪贴板权限？");
+                return false;
+            });
+            if (text) {
+                const urlPattern = /(https:\/\/)?[a-z0-9]+\.ctfile\.com\/[a-z]\/([\da-z]+-[a-z\d]+-[a-z\d]+)/;
+                const pwPattern = /\d{4}/
+                const $link = document.querySelector("#link")
+                const $passcode = document.querySelector("#passcode")
 
-            try {
-                const link = text.match(urlPattern);
-                $link.focus()
-                $link.value = link[0];
-                const rawPassword = text.split("密码")[1]
-                const password = rawPassword.match(pwPattern);
-                $passcode.focus()
-                $passcode.value = password[0];
-                await getInfo()
-            } catch (e) {
-                const dialog = new window.mdc.dialog.MDCDialog(document.querySelector('.mdc-dialog'));
-                dialog.open()
+                try {
+                    const link = text.match(urlPattern);
+                    $link.focus()
+                    $link.value = link[0];
+                    const rawPassword = text.split("密码")[1]
+                    const password = rawPassword.match(pwPattern);
+                    $passcode.focus()
+                    $passcode.value = password[0];
+                    await getInfo()
+                } catch (e) {
+                    const dialog = new window.mdc.dialog.MDCDialog(document.querySelector('.mdc-dialog'));
+                    dialog.open()
+                }
             }
         }
 
