@@ -1,7 +1,7 @@
 window.ctfile = {
-    version: () => { return "2.0.1" },
+    version: () => { return "2.2.0" },
     getByLink: (link, password) => {
-        return ctfile.getByID(link.slice(link.indexOf("/f/") + 3), password);
+        return ctfile.getByID(link.slice(link.lastIndexOf("/") + 1), password);
     },
     getByID: async (fileid, password) => {
         const origin = () => {
@@ -11,8 +11,19 @@ window.ctfile = {
             } else {
                 return "https://ctfile.qinlili.workers.dev";
             }
+        };
+        const path = id => {
+            switch (id.split("-").length) {
+                case 2: {
+                    return "file";
+                };
+                case 3:
+                default: {
+                    return "f";
+                }
+            }
         }
-        jsonText = JSON.parse(await (await fetch("https://webapi.ctfile.com/getfile.php?path=f&f=" + fileid + "&passcode=" + password + "&token=false&r=" + Math.random() + "&ref=" + origin(), {
+        jsonText = JSON.parse(await (await fetch("https://webapi.ctfile.com/getfile.php?path=" + path(fileid) + "&f=" + fileid + "&passcode=" + password + "&token=false&r=" + Math.random() + "&ref=" + origin(), {
             "headers": {
                 "origin": origin(),
                 "referer": origin()
