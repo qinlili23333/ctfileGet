@@ -183,7 +183,7 @@
                     const link = text.match(urlPattern);
                     $link.focus()
                     $link.value = link[0];
-                    const rawPassword = text.split("密码")[1]
+                    const rawPassword = text.split("密码")[1] || text.split("密碼")[1];
                     const password = rawPassword.match(pwPattern);
                     $passcode.focus()
                     $passcode.value = password[0];
