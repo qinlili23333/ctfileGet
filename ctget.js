@@ -1,7 +1,7 @@
 window.ctfile = {
-    version: () => { return "2.3.0" },
+    version: () => { return "2.4.0" },
     getByLink: (link, password) => {
-        return ctfile.getByID(link.slice(link.lastIndexOf("/") + 1), password);
+        return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2));
     },
     getByID: async (fileid, password) => {
         const origin = () => {
