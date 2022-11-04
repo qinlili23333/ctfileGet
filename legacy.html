@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<title>城通网盘解析器</title>
+
+<head>
+    <meta name="description" content="解析城通网盘直连地址" />
+    <link rel="canonical" href="https://ctfile.qinlili.bid/" />
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#FFFFFF">
+    <link rel="icon" href="./icon.png">
+    <link crossorigin="anonymous"
+        integrity="sha512-tH5CEoO7QorGJK5RZrcKozo5xe0qC0UgOhjkIoqXNVe9ApFAjJRbVFzDfVvdRUSOJ5g2Pw9VzzOBguouzhLoIQ=="
+        href="https://lib.baomitu.com/material-components-web/6.0.0/material-components-web.min.css" rel="stylesheet">
+    <script crossorigin="anonymous"
+        integrity="sha512-5zCl3JhN4Fqq6+irTX1v8J+77hwL54zTbrdl2Dl8YHe+KGcuV14C01u/uWFrSg+kZgOfGMneoUySVHqEgdRaPQ=="
+        src="https://lib.baomitu.com/material-components-web/6.0.0/material-components-web.min.js"></script>
+    <script src="./ctget.js"></script>
+</head>
+
+<body>
+    <button onclick="document.location.href='./button.html'" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">体验船新按钮版</span>
+    </button>
+    <br>
+    <button onclick="document.location.href='./history.html'" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">查看历史记录</span>
+    </button>
+    <br>
+    <H2>请输入链接和密码(可选)</H2>
+    <H4>下载地址有一定有效期,不可用于分享</H4>
+    <button onclick="readClipboard();" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">读取剪贴板</span>
+    </button>
+    <br>
+    <br>
+    <label style="width:100%;" class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
+        <input id="link" class="mdc-text-field__input" aria-labelledby="my-label-id">
+        <span class="mdc-notched-outline">
+            <span class="mdc-notched-outline__leading"></span>
+            <span class="mdc-notched-outline__notch">
+                <span class="mdc-floating-label" id="my-label-id">分享链接</span>
+            </span>
+            <span class="mdc-notched-outline__trailing"></span>
+        </span>
+    </label>
+    <br>
+    <br>
+    <label style="width:100%;" class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
+        <input id="passcode" class="mdc-text-field__input" aria-labelledby="my-label-id">
+        <span class="mdc-notched-outline">
+            <span class="mdc-notched-outline__leading"></span>
+            <span class="mdc-notched-outline__notch">
+                <span class="mdc-floating-label" id="my-label-id">密码(留空则使用琴梨梨通用密码)</span>
+            </span>
+            <span class="mdc-notched-outline__trailing"></span>
+        </span>
+    </label>
+    <br>
+    <br>
+    <button onclick="getInfo();" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">获取下载地址</span>
+    </button>
+    <br>
+    <H4 id="filename"></H4>
+    <H4 id="filesize"></H4>
+    <H4 id="filetime"></H4>
+    <p id="dlURL"></p>
+    <button onclick="dlFile();" id="dlbtn" style="display:none;" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">下载文件</span>
+    </button>
+    <br>
+    <button onclick="document.location.href='https://qinlili.bid/Support/'" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">支持琴梨梨</span>
+    </button>
+    <button onclick="document.location.href='https://github.com/qinlili23333/ctfileGet'" class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">本项目已开源</span>
+    </button>
+    <br>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377"
+        crossorigin="anonymous"></script>
+    <!-- 城通 -->
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1806614386308377" data-ad-slot="4999029283"
+        data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    <div class="mdc-dialog">
+        <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
+                aria-describedby="my-dialog-content">
+                <div class="mdc-dialog__content" id="my-dialog-content">
+                    <h5>无法从剪贴板读取链接和密码</h5>
+                    <div>期望的文本形式类似于“https://url76.ctfile.com/f/20044976-553638227-3a47df 密码4718”</div>
+                    <div>请尝试重新复制或者手动填入</div>
+                </div>
+                <div class="mdc-dialog__actions">
+                    <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="discard">
+                        <div class="mdc-button__ripple"></div>
+                        <span class="mdc-button__label">好的</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </div>
+    <script>
+        var REFERRER_BLACKLIST = ['https://www.qvocd.cc/', 'https://funletu.com/'];
+        if (REFERRER_BLACKLIST.includes(document.referrer)) {
+            alert("禁止从该域名访问本站，该域名存在收费资源分享或强制性公众号引流，却没给我分钱\n你赚钱了，我没赚到钱，那我凭什么给你免费用？\n如果你是用户，你可以直接在新标签页地址栏输入本站域名https://ctfile.qinlili.bid访问\n如果你是站长想解除黑名单，给我打钱就行，你赚钱了我没赚到，那我在自己的地盘上恶心下你是必然的\n\n即将传送到琴梨梨小站首页...");
+            document.location.href = "https://qinlili.bid";
+        }
+        const funDownload = (content, filename) => {
+            var eleLink = document.createElement('a');
+            eleLink.download = filename;
+            eleLink.style.display = 'none';
+            eleLink.href = content;
+            document.body.appendChild(eleLink);
+            eleLink.click();
+            document.body.removeChild(eleLink);
+        };
+        const getInfo = async () => {
+            document.getElementById("filename").innerText = "";
+            document.getElementById("filesize").innerText = "";
+            document.getElementById("filetime").innerText = "";
+            document.getElementById("dlURL").innerText = ""
+            document.getElementById("dlbtn").style.display = "none";
+            password = document.getElementById("passcode").value ? document.getElementById("passcode").value : "547873715";
+            let fileInfo = await ctfile.getByLink(document.getElementById("link").value, password);
+            console.log(fileInfo);
+            if (fileInfo.success) {
+                document.getElementById("filename").innerText = "文件名称:" + fileInfo.name;
+                document.getElementById("filesize").innerText = "文件大小:" + fileInfo.size;
+                document.getElementById("filetime").innerText = "文件时间:" + fileInfo.time;
+                document.getElementById("dlURL").innerText = "下载地址:" + fileInfo.link;
+                document.getElementById("dlbtn").style.display = "block";
+                const record = {
+                    link: document.getElementById("link").value,
+                    password,
+                    queryTime: new Date().toLocaleString(),
+                    name: fileInfo.name,
+                    size: fileInfo.size,
+                    time: fileInfo.time,
+                }
+                const store = localStorage.getItem("store")
+                let records = JSON.parse(store);
+
+                if (store && Array.isArray(records)) {
+                    records = records.filter(r => r.link !== record.link)
+                    records.push(record);
+                    localStorage.setItem("store", JSON.stringify(records));
+                } else {
+                    localStorage.setItem("store", JSON.stringify([record]))
+                }
+            } else {
+                document.getElementById("filename").innerText = "出错了，错误原因是:" + fileInfo.errormsg;
+            }
+        }
+        const dlFile = () => {
+            funDownload(dlURL, jsonText.file_name);
+        }
+        const readClipboard = async () => {
+            const log = console.log.bind(console)
+            const text = await navigator.clipboard.readText().catch(err => {
+                alert("读取剪贴板失败了喵！你是否拒绝了剪贴板权限？");
+                return false;
+            });
+            if (text) {
+                const urlPattern = /(https:\/\/)?[a-z0-9]+\.ctfile\.com\/[a-z]\/([\da-z]+-[a-z\d]+-[a-z\d]+)/;
+                const pwPattern = /\d{4}/
+                const $link = document.querySelector("#link")
+                const $passcode = document.querySelector("#passcode")
+
+                try {
+                    const link = text.match(urlPattern);
+                    $link.focus()
+                    $link.value = link[0];
+                    const rawPassword = text.split("密码")[1] || text.split("密碼")[1];
+                    const password = rawPassword.match(pwPattern);
+                    $passcode.focus()
+                    $passcode.value = password[0];
+                    await getInfo()
+                } catch (e) {
+                    const dialog = new window.mdc.dialog.MDCDialog(document.querySelector('.mdc-dialog'));
+                    dialog.open()
+                }
+            }
+        }
+
+    </script>
+    <script>
+        window.mdc.autoInit();
+        document.querySelectorAll('.foo-button').forEach(element => {
+            mdc.ripple.MDCRipple.attachTo(element);
+        });
+    </script>
+</body>
+
+</html>

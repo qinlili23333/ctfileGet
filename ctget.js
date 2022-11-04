@@ -1,9 +1,9 @@
 window.ctfile = {
-    version: () => { return "2.4.0" },
-    getByLink: (link, password) => {
-        return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2));
+    version: () => { return "2.5.0" },
+    getByLink: (link, password, firstcallback) => {
+        return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2), firstcallback);
     },
-    getByID: async (fileid, password) => {
+    getByID: async (fileid, password, firstcallback) => {
         const origin = () => {
             //兼容node.js
             if (document && !(document.location.origin == 'file://')) {
@@ -30,6 +30,11 @@ window.ctfile = {
             },
         })).text());
         if (jsonText.code == 200) {
+            firstcallback({
+                "name": jsonText.file.file_name,
+                "size": jsonText.file.file_size,
+                "time": jsonText.file.file_time,
+            })
             jsonText2 = JSON.parse(await (await fetch("https://webapi.ctfile.com/get_file_url.php?uid=" + jsonText.file.userid + "&fid=" + jsonText.file.file_id + "&file_chk=" + jsonText.file.file_chk + "&app=0&acheck=2&rd=" + Math.random(), {
                 "headers": {
                     "origin": origin(),

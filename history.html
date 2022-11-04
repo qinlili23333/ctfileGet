@@ -38,7 +38,9 @@
 
 <body>
     <div class="navbar">
-        <button onclick="document.location.href='./'" id="dlbtn" class="mdc-button foo-button">
+        <button
+            onclick="(window.this===window.top)?document.location.href='./':window.parent.postMessage('close', '*');"
+            id="dlbtn" class="mdc-button foo-button">
             <div class="mdc-button__ripple"></div>
             <span class="mdc-button__label">返回</span>
         </button>
@@ -79,13 +81,6 @@
         </div>
         <div class="mdc-dialog__scrim"></div>
     </div>
-    <script>
-        var REFERRER_BLACKLIST = ['https://www.qvocd.cc/', 'https://funletu.com/'];
-        if (REFERRER_BLACKLIST.includes(document.referrer)) {
-            alert("禁止从该域名访问本站，该域名存在收费资源分享或强制性公众号引流，却没给我分钱\n你赚钱了，我没赚到钱，那我凭什么给你免费用？\n如果你是用户，你可以直接在新标签页地址栏输入本站域名https://ctfile.qinlili.bid访问\n如果你是站长想解除黑名单，给我打钱就行，你赚钱了我没赚到，那我在自己的地盘上恶心下你是必然的\n\n即将传送到琴梨梨小站首页...");
-            document.location.href = "https://qinlili.bid";
-        }
-    </script>
     <script>
         const setBlank = () => {
             document.querySelector("#records").innerHTML =
