@@ -437,7 +437,9 @@
             document.getElementById("size").innerText = "体积：加载中...";
             document.getElementById("date").innerText = "日期：加载中...";
             document.getElementById("downdiv").style.display = "none";
-            document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[2]);
+            if (document.getElementById("downdiv").children[2]) {
+                document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[2]);
+            }
         };
         document.getElementById("closead").onclick = async () => {
             for (let i = 0; i < 1000; i++) {
