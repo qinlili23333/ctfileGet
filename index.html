@@ -313,6 +313,10 @@
                     <input id="dllink" placeholder="下载地址">
                     <p class="inputright loading" id="linkloading"></p>
                 </div>
+                <div style="display:flex;flex-flow:row;">
+                    <p class="halfinfo" id="speed">限速：加载中...</p>
+                    <p class="halfinfo" id="reqtime">耗时：加载中...</p>
+                </div>
             </div>
             <div id="downdiv">
                 <div title="新标签打开" id="openlink" class="dlBtn">
@@ -326,6 +330,8 @@
                         复制链接</h3>
                 </div>
             </div>
+            <br>
+            <p>本站仅使用官方API解析直连下载地址，并不能突破官方限速！请搭配IDM等工具实现大文件断点续传！</p>
         </div>
         <div id="ads">
             <div id="adsTop">
@@ -437,6 +443,8 @@
             document.getElementById("size").innerText = "体积：加载中...";
             document.getElementById("date").innerText = "日期：加载中...";
             document.getElementById("downdiv").style.display = "none";
+            document.getElementById("speed").innerText = "限速：加载中...";
+            document.getElementById("reqtime").innerText = "耗时：加载中...";
             if (document.getElementById("downdiv").children[2]) {
                 document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[2]);
             }
@@ -490,10 +498,61 @@
             document.getElementById("nameloading").style.display = "none";
             document.getElementById("linkloading").style.display = "none";
             if (file.success) {
+                const sec_to_time = s => {
+                    let t;
+                    if (s > -1) {
+                        let hour = Math.floor(s / 3600);
+                        let min = Math.floor(s / 60) % 60;
+                        let sec = s % 60;
+                        if (hour < 10) {
+                            t = '0' + hour + ":";
+                        } else {
+                            t = hour + ":";
+                        }
+
+                        if (min < 10) { t += "0"; }
+                        t += min + ":";
+                        if (sec < 10) { t += "0"; }
+                        t += sec.toFixed(0);
+                    }
+                    return t;
+                }
+                function covertSizeToByte(size) {
+                    let temp = size;
+                    if (size.endsWith('KB')) {
+                        return parseFloat(temp.replace('KB', '')) * 1024
+                    }
+                    if (size.endsWith('MB')) {
+                        return parseFloat(temp.replace('MB', '')) * 1024 * 1024
+                    }
+                    if (size.endsWith('GB')) {
+                        return parseFloat(temp.replace('GB', '')) * 1024 * 1024 * 1024
+                    }
+                    if (size.endsWith('B')) {
+                        return parseFloat(temp.replace('B', ''))
+                    }
+
+                };
+                function bytesToSize(bytes) {
+                    if (bytes === '0' || bytes === 0) return '0B';
+
+                    var k = 1024;
+
+                    sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+                    i = Math.floor(Math.log(bytes) / Math.log(k));
+
+                    return parseFloat(bytes / Math.pow(k, i)).toFixed(2) + sizes[i];                                                                                                      //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+                };
                 document.getElementById("dllink").value = file.link;
                 document.getElementById("downdiv").style.display = "flex";
                 document.getElementById("downdiv").style.flexWrap = "wrap";
                 document.getElementById("downdiv").appendChild(blobBtn.createBtn(file.link, file.name));
+                let link = new URL(file.link);
+                let speed = Number(link.searchParams.get("spd")) * Number(link.searchParams.get("limit"));
+                document.getElementById("speed").innerText = "限速：" + bytesToSize(speed) + "/s";
+                let time = sec_to_time(covertSizeToByte(file.size) / Number(speed));
+                document.getElementById("reqtime").innerText = "耗时：" + time;
                 document.getElementById("openlink").onclick = () => { window.open(file.link, "_blank") };
                 document.getElementById("copylink").onclick = () => {
                     if (navigator.clipboard) {
