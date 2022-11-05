@@ -13,6 +13,42 @@
     <link href="./public.css" rel="stylesheet">
     <script defer src="./ctget.js"></script>
     <script defer src="./blobbtn.js"></script>
+    <script>
+        window.addEventListener('load', async (event) => {
+            document.body.style.transform = "scale(1,1) ";
+            document.body.style.opacity = 1;
+            const loadSelfAd = async () => {
+                console.log("加载自定义广告");
+                await loadScriptAsync("./agari.js");
+            }
+            await loadScriptAsync("./yuni.js");
+            if (!localStorage.getItem("agreePrivacy")) {
+                let read = document.createElement("p");
+                read.className = "actBtn";
+                read.innerText = "查看";
+                read.onclick = () => {
+                    showFrameSet('./privacy.html');
+                    msg.restore();
+                };
+                msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
+                loadSelfAd();
+            } else {
+                msg.restore();
+                if (localStorage.adPref && localStorage.adPref == "any") {
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                    await loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
+                } else {
+                    loadSelfAd();
+                }
+            };
+            window.addEventListener("message", async (event) => {
+                console.log(event.data)
+                if (event.data == "old") {
+                    location.href = "./legacy";
+                }
+            }, false);
+        });
+    </script>
     <style>
         body {
             overflow: auto;
@@ -266,12 +302,6 @@
             text-overflow: ellipsis;
         }
     </style>
-    <script>
-        window.addEventListener('load', (event) => {
-            document.body.style.transform = "scale(1,1) ";
-            document.body.style.opacity = 1;
-        });
-    </script>
 </head>
 
 <body>
@@ -349,7 +379,6 @@
     </div>
 
     <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
         console.log("Codename Asaki - QINLILI 2022");
         const sleep = delay => new Promise((resolve) => setTimeout(resolve, delay));
         const loadScriptAsync = link => {
@@ -406,37 +435,6 @@
                 document.getElementById("topMsg").style.display = "flex";
             },
         };
-        (async () => {
-            const loadSelfAd = async () => {
-                console.log("加载自定义广告");
-                await loadScriptAsync("./agari.js");
-            }
-            await loadScriptAsync("./yuni.js");
-            if (!localStorage.getItem("agreePrivacy")) {
-                let read = document.createElement("p");
-                read.className = "actBtn";
-                read.innerText = "查看";
-                read.onclick = () => {
-                    showFrameSet('./privacy.html');
-                    msg.restore();
-                };
-                msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
-                loadSelfAd();
-            } else {
-                msg.restore();
-                if (localStorage.adPref && localStorage.adPref == "any") {
-                    await loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
-                } else {
-                    loadSelfAd();
-                }
-            };
-            window.addEventListener("message", async (event) => {
-                console.log(event.data)
-                if (event.data == "old") {
-                    location.href = "./legacy";
-                }
-            }, false);
-        })();
         const emptyfile = () => {
             document.getElementById("filename").value = "";
             document.getElementById("dllink").value = "";
