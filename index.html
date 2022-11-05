@@ -41,12 +41,16 @@
                     loadSelfAd();
                 }
             };
-            window.addEventListener("message", async (event) => {
-                console.log(event.data)
-                if (event.data == "old") {
-                    location.href = "./legacy";
+            if (location.search) {
+                let url = new URLSearchParams(location.search);
+                if (url.get("file")) {
+                    document.getElementById("link").value = url.get("file");
+                    if (url.get("pass")) {
+                        document.getElementById("pass").value = url.get("pass");
+                    }
+                    document.getElementById("localParse").click();
                 }
-            }, false);
+            }
         });
     </script>
     <style>
@@ -389,7 +393,13 @@
                 script.crossOrigin = "anonymous";
                 document.body.appendChild(script);
             });
-        }
+        };
+        window.addEventListener("message", async (event) => {
+            console.log(event.data)
+            if (event.data == "old") {
+                location.href = "./legacy";
+            }
+        }, false);
         //顶栏
         const msg = {
             restore: () => {
@@ -466,12 +476,12 @@
                     msg.change("已识别密码", "./icon/password.svg", "#86C166");
                     document.getElementById("autopass").style.filter = "none";
                     document.getElementById("pass").value = link.searchParams.get("p");
-                    setTimeout("msg.restore()", 3000);
+                    setTimeout(msg.restore, 3000);
                 };
             };
             if (document.getElementById("link").value.split("-").length < 2) {
                 msg.change("无效的地址或ID", "./icon/error.svg", "rgba(232,48,21,0.6)");
-                setTimeout("msg.restore()", 3000);
+                setTimeout(msg.restore, 3000);
             };
         });
         document.getElementById("pass").addEventListener("change", e => {
@@ -529,17 +539,12 @@
                     if (size.endsWith('B')) {
                         return parseFloat(temp.replace('B', ''))
                     }
-
                 };
                 function bytesToSize(bytes) {
                     if (bytes === '0' || bytes === 0) return '0B';
-
                     var k = 1024;
-
                     sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
                     i = Math.floor(Math.log(bytes) / Math.log(k));
-
                     return parseFloat(bytes / Math.pow(k, i)).toFixed(2) + sizes[i];                                                                                                      //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
                 };
                 document.getElementById("dllink").value = file.link;
@@ -556,6 +561,7 @@
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(file.link).then(() => {
                             msg.change("已复制链接", "./icon/copy.svg", "#86C166")
+                            setTimeout(msg.restore, 3000);
                         }, () => {
                             msg.change("复制失败，请尝试手动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
                             document.getElementById("dllink").focus();
@@ -588,7 +594,7 @@
             } else {
                 msg.change(file.errormsg, "./icon/error.svg", "rgba(232,48,21,0.6)");
                 document.getElementById("fileinfo").style.display = "none";
-                setTimeout("msg.restore()", 5000);
+                setTimeout(msg.restore, 5000);
             }
         };
         document.getElementById("cloudParse").onclick = async () => {
