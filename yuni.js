@@ -99,15 +99,17 @@ const rebuildFrame = url => {
 };
 window.addEventListener("message", async (event) => {
     console.log(event.data)
-    if (event.data == "close") {
-        document.getElementById("floatMenuContainer").style.opacity = 0;
-        document.getElementById("floatMenu").style.marginTop = "100vh";
-        await sleep(500);
-        document.getElementById("floatMenuContainer").style.display = "none";
-    }
-    if (event.data.startsWith("http")) {
-        document.getElementById("loading").style.display = "block";
-        rebuildFrame(event.data);
+    if (typeof event.data == "string") {
+        if (event.data == "close") {
+            document.getElementById("floatMenuContainer").style.opacity = 0;
+            document.getElementById("floatMenu").style.marginTop = "100vh";
+            await sleep(500);
+            document.getElementById("floatMenuContainer").style.display = "none";
+        }
+        if (event.data.startsWith("http")) {
+            document.getElementById("loading").style.display = "block";
+            rebuildFrame(event.data);
+        }
     }
 }, false);
 const showFrameSet = async (url, wide) => {

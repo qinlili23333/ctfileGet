@@ -6,10 +6,10 @@
     <meta name="description" content="解析城通网盘直连地址" />
     <link rel="canonical" href="https://ctfile.qinlili.bid/" />
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#FFFFFF">
-    <link rel="icon" href="./icon.png">
+    <link rel="icon" href="./icon.webp">
     <link href="./public.css" rel="stylesheet">
     <script defer src="./ctget.js"></script>
     <script defer src="./blobbtn.js"></script>
@@ -98,7 +98,7 @@
             margin: 2px;
             width: 28px;
             height: 28px;
-            background-image: url(./icon.png);
+            background-image: url(./icon.webp);
             background-size: 100% 100%;
         }
 
@@ -429,7 +429,7 @@
                 pay.onclick = () => {
                     showFrameSet('https://qinlili.bid/Support/');
                 };
-                return msg.change("城通网盘解析器~", "./icon.png", null, [history, pay, info]);
+                return msg.change("城通网盘解析器~", "./icon.webp", null, [history, pay, info]);
             },
             change: (msg, icon, color, actions) => {
                 document.getElementById("msgText").innerText = msg;
