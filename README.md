@@ -1,6 +1,11 @@
 # ctfileGet
 获取城通网盘一次性直连地址
 
+## V2.0已上线！全新界面！
+支持直接通过传参一键解析  
+示例地址：https://ctfile.qinlili.bid/?file=8067059-687855402-65ca36&pass=547873715  
+
+
 ## 在线服务地址[ctfile.qinlili.bid](https://ctfile.qinlili.bid)  
 ## 备用节点[ctfile.glitch.qinlili.bid](https://ctfile.glitch.qinlili.bid)  
 ## 应急节点[185-199-111-153.dynamic-ip.hinet.net](http://185-199-111-153.dynamic-ip.hinet.net/)  
