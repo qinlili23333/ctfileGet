@@ -50,15 +50,15 @@
         AdSense提供，Google及其合作伙伴可能会使用第三方Cookies收集信息。你可以通过自定义广告设置来关闭信息收集。<br>你也可以勾选关闭第三方广告，这将增多广告数量，但广告内容将均由琴梨梨自行提供，不再使用Google
         AdSense。</p>
     <br>
-    <input id="check" type="checkbox">我已阅读并同意隐私协议</input>
+    <input id="check" type="checkbox"></input><label for="check">我已阅读并同意隐私协议</label>
     <br>
-    <input id="thirdad" type="checkbox">关闭第三方广告</input>
+    <input id="thirdad" type="checkbox"></input><label for="thirdad">关闭第三方广告</label>
     <br>
-    <button id="save">
-        <img style="height:20px;" src="./icon/save.svg">
+    <button role="button" aria-label="保存隐私设置" id="save">
+        <img alt="保存隐私设置" style="height:20px;" src="./icon/save.svg">
         保存</button>
-    <button id="settings">
-        <img style="height:20px;" src="./icon/adsense.svg">
+    <button role="button" aria-label="自定义Google广告" id="settings">
+        <img alt="自定义广告" style="height:20px;" src="./icon/adsense.svg">
         自定义广告</button>
     <br>
     <script>

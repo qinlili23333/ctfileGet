@@ -26,6 +26,8 @@
                 let read = document.createElement("p");
                 read.className = "actBtn";
                 read.innerText = "查看";
+                read.setAttribute("aria-label", "查看隐私政策");
+                read.tabIndex = 0;
                 read.onclick = () => {
                     showFrameSet('./privacy.html');
                     msg.restore();
@@ -350,6 +352,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        label {
+            display: block;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
     </style>
 </head>
 
@@ -365,23 +374,31 @@
     <div id="main">
         <div id="function">
             <div class="inputdiv">
-                <input id="link" placeholder="链接或文件ID">
+                <input role="textbox" tabindex="0" id="link" name="链接或文件ID" placeholder="链接或文件ID">
+                <label for="link">链接或文件ID</label>
             </div>
-            <div class="inputdiv">
-                <input id="pass" placeholder="密码">
-                <p id="autopass" class="inputright" style="background-image:url(./icon/optimize.svg)"></p>
+            <div aria-labelledby="密码" class="inputdiv">
+                <input role="textbox" tabindex="0" id="pass" name="密码" placeholder="密码">
+                <label for="pass">密码</label>
+                <p tabindex="0" id="autopass" role="button" alt="填充默认密码" class="inputright"
+                    style="background-image:url(./icon/optimize.svg);font-size: 0;">填充默认密码</p>
             </div>
             <div id="parse">
-                <button id="localParse" class="parseBtn" style="width:100%">
-                    <p class="btnIcon" style="background-image:url(./icon/local.svg)"></p>&nbsp;&nbsp;&nbsp;本地解析
+                <button tabindex="0" role="button" aria-label="本地解析" id="localParse" class="parseBtn"
+                    style="width:100%">
+                    <p class="btnIcon" style="background-image:url(./icon/local.svg)"></p>
+                    &nbsp;&nbsp;&nbsp;本地解析
                 </button>
-                <button id="cloudParse" class="parseBtn" style="display:none;">
-                    <p class="btnIcon" style="background-image:url(./icon/cloud.svg)"></p>&nbsp;&nbsp;&nbsp;云解析
+                <button tabindex="0" role="button" aria-label="云解析" id="cloudParse" class="parseBtn"
+                    style="display:none;">
+                    <p class="btnIcon" style="background-image:url(./icon/cloud.svg)"></p>
+                    &nbsp;&nbsp;&nbsp;云解析
                 </button>
             </div>
             <div id="fileinfo">
                 <div class="inputdiv">
-                    <input id="filename" placeholder="文件名">
+                    <input role="textbox" tabindex="0" id="filename" placeholder="文件名">
+                    <label for="filename">文件名</label>
                     <p class="inputright loading" id="nameloading"></p>
                 </div>
                 <div style="display:flex;flex-flow:row;">
@@ -389,7 +406,8 @@
                     <p class="halfinfo" id="date">日期：加载中...</p>
                 </div>
                 <div class="inputdiv">
-                    <input id="dllink" placeholder="下载地址">
+                    <input role="textbox" tabindex="0" id="dllink" placeholder="下载地址">
+                    <label for="dllink">下载地址</label>
                     <p class="inputright loading" id="linkloading"></p>
                 </div>
                 <div style="display:flex;flex-flow:row;">
@@ -398,13 +416,13 @@
                 </div>
             </div>
             <div id="downdiv">
-                <div title="新标签打开" id="openlink" class="dlBtn">
-                    <img src="./icon/open.svg" class="dlBtnIcon">
+                <div tabindex="0" role="button" title="新标签打开" id="openlink" class="dlBtn">
+                    <img alt="新标签打开" src="./icon/open.svg" class="dlBtnIcon">
                     <h3 class="dlBtnTitle">
                         新标签打开</h3>
                 </div>
-                <div title="复制链接" id="copylink" class="dlBtn">
-                    <img src="./icon/copy.svg" class="dlBtnIcon">
+                <div tabindex="0" role="button" title="复制链接" id="copylink" class="dlBtn">
+                    <img alt="复制链接" src="./icon/copy.svg" class="dlBtnIcon">
                     <h3 class="dlBtnTitle">
                         复制链接</h3>
                 </div>
@@ -412,10 +430,10 @@
             <br>
             <p>本站仅使用官方API解析直连下载地址，并不能突破官方限速！请搭配IDM等工具实现大文件断点续传！</p>
         </div>
-        <div id="ads">
+        <div aria-label="推广" id="ads">
             <div id="adsTop">
                 <p id="adinfo" style="font-weight:bolder">推广</p>
-                <p id="closead"></p>
+                <p role="button" tabIndex="0" aria-label="关闭推广" id="closead"></p>
             </div>
             <!-- 城通 -->
             <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1806614386308377"
@@ -508,10 +526,13 @@
                 let btn = document.createElement("div");
                 btn.indl = false;
                 btn.className = "dlBtn";
+                btn.setAttribute("role", "button");
+                btn.title = "内置下载";
                 btn.addEventListener("mouseenter", event => { event.path[0].style.backgroundColor = "#86C166"; })
                 btn.addEventListener("mouseleave", event => { event.path[0].style.backgroundColor = "transparent"; })
                 btn.style = "-webkit-tap-highlight-color: transparent;position:relative;display: flex;flex-direction: row;margin: 4px;height: 32px;border: 1px solid #666;border-radius: 4px;background-color: #ffffff;cursor: pointer;transition: background-color 0.5s;"
                 let dlicon = document.createElement("img");
+                dlicon.alt = "内置下载"
                 dlicon.style = "margin: 2px;width: 28px;height: 28px;transition: filter 0.5s;"
                 btn.appendChild(dlicon);
                 let dltitle = document.createElement("h3");
@@ -595,8 +616,9 @@
                 info.style.width = "24px";
                 info.style.backgroundRepeat = "round";
                 info.style.backgroundImage = "url(./icon/info.svg)";
+                info.tabIndex = 0;
+                info.setAttribute("aria-label", "关于");
                 info.onclick = () => {
-                    //打开关于页面
                     showFrameSet('./about.html');
                 };
                 const history = document.createElement("p");
@@ -604,8 +626,9 @@
                 history.style.width = "24px";
                 history.style.backgroundRepeat = "round";
                 history.style.backgroundImage = "url(./icon/history.svg)";
+                history.tabIndex = 0;
+                history.setAttribute("aria-label", "历史记录");
                 history.onclick = () => {
-                    //打开关于页面
                     showFrameSet('./history.html');
                 };
                 const pay = document.createElement("p");
@@ -613,6 +636,8 @@
                 pay.style.width = "24px";
                 pay.style.backgroundRepeat = "round";
                 pay.style.backgroundImage = "url(./icon/pay.svg)";
+                pay.tabIndex = 0;
+                pay.setAttribute("aria-label", "赞助");
                 pay.onclick = () => {
                     showFrameSet('https://qinlili.bid/Support/');
                 };
@@ -623,7 +648,17 @@
                 document.getElementById("msgIcon").style.backgroundImage = icon ? `url(${icon})` : "none";
                 document.getElementById("topMsg").style.backgroundColor = color ? color : "#FFFFFF";
                 document.getElementById("actZone").innerHTML = "";
-                actions ? actions.forEach(btn => document.getElementById("actZone").appendChild(btn)) : null;
+                actions ? actions.forEach(btn => {
+                    document.getElementById("actZone").appendChild(btn);
+                    btn.setAttribute("role", "button");
+                    if (!btn.id) {
+                        btn.id = "actBtn" + Math.random().toString(36).substr(2);
+                    };
+                    //let label = document.createElement("label");
+                    //label.setAttribute("for", btn.id);
+                    //label.innerText = btn.getAttribute("aria-label");
+                    //document.getElementById("actZone").appendChild(label);
+                }) : null;
             },
             hide: () => {
                 document.getElementById("topMsg").style.display = "none";
@@ -738,6 +773,10 @@
                 document.getElementById("downdiv").style.display = "flex";
                 document.getElementById("downdiv").style.flexWrap = "wrap";
                 document.getElementById("downdiv").appendChild(blobBtn.createBtn(file.link, file.name));
+
+                if (document.getElementById("downdiv").children[2]) {
+                    document.getElementById("downdiv").children[2].tabIndex = 0;
+                }
                 let link = new URL(file.link);
                 let speed = Number(link.searchParams.get("spd")) * Number(link.searchParams.get("limit"));
                 document.getElementById("speed").innerText = "限速：" + bytesToSize(speed) + "/s";
