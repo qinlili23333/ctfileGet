@@ -43,6 +43,13 @@
                     loadSelfAd();
                 }
             };
+            const buildToken = () => {
+                let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                document.getElementById("token").value = token;
+                localStorage.setItem("token", token);
+                return token;
+            }
+            document.getElementById("token").value = localStorage.getItem("token").length ? localStorage.getItem("token") : buildToken();
             if (location.search) {
                 let url = new URLSearchParams(location.search);
                 if (url.get("file")) {
@@ -383,6 +390,12 @@
                 <p tabindex="0" id="autopass" role="button" alt="填充默认密码" class="inputright"
                     style="background-image:url(./icon/optimize.svg);font-size: 0;">填充默认密码</p>
             </div>
+            <div aria-labelledby="Token" class="inputdiv">
+                <input role="textbox" tabindex="0" id="token" name="Token" placeholder="Token">
+                <label for="token">Token</label>
+                <p tabindex="0" id="tokenhelp" role="button" alt="登录" class="inputright"
+                    style="background-image:url(./icon/login.svg);font-size: 0;">登录</p>
+            </div>
             <div id="parse">
                 <button tabindex="0" role="button" aria-label="本地解析" id="localParse" class="parseBtn"
                     style="width:100%">
@@ -448,11 +461,11 @@
     <script>
         console.log("Codename Asaki - QINLILI 2022");
         window.ctfile = {
-            version: () => { return "2.5.0" },
-            getByLink: (link, password, firstcallback) => {
-                return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2), firstcallback);
+            version: () => { return "2.6.0" },
+            getByLink: (link, password, token, firstcallback) => {
+                return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2), token, firstcallback);
             },
-            getByID: async (fileid, password, firstcallback) => {
+            getByID: async (fileid, password, token, firstcallback) => {
                 const origin = () => {
                     //兼容node.js
                     if (document && !(document.location.origin == 'file://')) {
@@ -472,7 +485,7 @@
                         }
                     }
                 }
-                jsonText = JSON.parse(await (await fetch("https://webapi.ctfile.com/getfile.php?path=" + path(fileid) + "&f=" + fileid + "&passcode=" + password + "&token=false&r=" + Math.random() + "&ref=" + origin(), {
+                jsonText = JSON.parse(await (await fetch("https://webapi.ctfile.com/getfile.php?path=" + path(fileid) + "&f=" + fileid + "&passcode=" + password + "&token=" + token + "&r=" + Math.random() + "&ref=" + origin(), {
                     "headers": {
                         "origin": origin(),
                         "referer": origin()
@@ -484,28 +497,48 @@
                         "size": jsonText.file.file_size,
                         "time": jsonText.file.file_time,
                     })
-                    jsonText2 = JSON.parse(await (await fetch("https://webapi.ctfile.com/get_file_url.php?uid=" + jsonText.file.userid + "&fid=" + jsonText.file.file_id + "&file_chk=" + jsonText.file.file_chk + "&app=0&acheck=2&rd=" + Math.random(), {
-                        "headers": {
-                            "origin": origin(),
-                            "referer": origin()
-                        },
-                    })).text());
-                    if (jsonText2.code == 200) {
+                    if (jsonText.file.is_vip == 1) {
                         return {
                             "success": true,
                             "name": jsonText.file.file_name,
                             "size": jsonText.file.file_size,
                             "time": jsonText.file.file_time,
-                            "link": jsonText2.downurl
+                            "link": jsonText.file.vip_dx_url
                         };
                     } else {
-                        return {
-                            "success": false,
-                            "name": jsonText.file.file_name,
-                            "size": jsonText.file.file_size,
-                            "time": jsonText.file.file_time,
-                            "errormsg": jsonText2.message
-                        };
+                        jsonText2 = JSON.parse(await (await fetch("https://webapi.ctfile.com/get_file_url.php?uid=" + jsonText.file.userid + "&fid=" + jsonText.file.file_id + "&file_chk=" + jsonText.file.file_chk + "&app=0&acheck=2&rd=" + Math.random(), {
+                            "headers": {
+                                "origin": origin(),
+                                "referer": origin()
+                            },
+                        })).text());
+                        if (jsonText2.code == 200) {
+                            return {
+                                "success": true,
+                                "name": jsonText.file.file_name,
+                                "size": jsonText.file.file_size,
+                                "time": jsonText.file.file_time,
+                                "link": jsonText2.downurl
+                            };
+                        } else {
+                            if (jsonText2.code == 302) {
+                                return {
+                                    "success": false,
+                                    "name": jsonText.file.file_name,
+                                    "size": jsonText.file.file_size,
+                                    "time": jsonText.file.file_time,
+                                    "errormsg": "需要登录！"
+                                };
+                            } else {
+                                return {
+                                    "success": false,
+                                    "name": jsonText.file.file_name,
+                                    "size": jsonText.file.file_size,
+                                    "time": jsonText.file.file_time,
+                                    "errormsg": jsonText2.message
+                                };
+                            }
+                        }
                     }
                 } else {
                     return {
@@ -688,7 +721,7 @@
             await sleep(50);
             alert("广告已关闭！");
         };
-        document.getElementById("link").addEventListener("change", e => {
+        document.getElementById("link").addEventListener("change", () => {
             let link = document.getElementById("link").value;
             if (link.indexOf("http") != -1) {
                 link = new URL(link);
@@ -706,20 +739,33 @@
                 setTimeout(msg.restore, 3000);
             };
         });
-        document.getElementById("pass").addEventListener("change", e => {
+        document.getElementById("pass").addEventListener("change", () => {
             document.getElementById("autopass").style.filter = "none";
         });
+        document.getElementById("token").addEventListener("change", () => {
+            localStorage.setItem("token", document.getElementById("token").value);
+        })
         document.getElementById("autopass").onclick = async () => {
             document.getElementById("pass").value = "547873715";
             await sleep(10);
             document.getElementById("autopass").style.filter = "invert(65%) sepia(20%) saturate(754%) hue-rotate(95deg) brightness(90%) contrast(89%)";
         };
+        document.getElementById("tokenhelp").onclick = () => {
+            location.replace("https://www.ctfile.com/tokenGo.php?token=" + document.getElementById("token").value + "&url=https%3A%2F%2Fwww.ctfile.com%2Fp%2Flogin");
+        }
         document.getElementById("localParse").onclick = async () => {
+            let getToken = () => {
+                if (document.getElementById("token").value.length) {
+                    return document.getElementById("token").value;
+                } else {
+                    return false;
+                }
+            };
             emptyfile();
             document.getElementById("fileinfo").style.display = "block";
             document.getElementById("nameloading").style.display = "block";
             document.getElementById("linkloading").style.display = "block";
-            let file = await ctfile.getByID(document.getElementById("link").value, document.getElementById("pass").value, file => {
+            let file = await ctfile.getByID(document.getElementById("link").value, document.getElementById("pass").value, getToken(), file => {
                 document.getElementById("nameloading").style.display = "none";
                 document.getElementById("filename").value = file.name;
                 document.getElementById("size").innerText = "体积：" + file.size;
