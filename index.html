@@ -49,7 +49,7 @@
                 localStorage.setItem("token", token);
                 return token;
             }
-            document.getElementById("token").value = localStorage.getItem("token").length ? localStorage.getItem("token") : buildToken();
+            document.getElementById("token").value = localStorage.getItem("token") ? (localStorage.getItem("token").length ? localStorage.getItem("token") : buildToken()) : buildToken();
             if (location.search) {
                 let url = new URLSearchParams(location.search);
                 if (url.get("file")) {
