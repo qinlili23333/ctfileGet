@@ -366,10 +366,28 @@
             height: 0;
             overflow: hidden;
         }
+
+        #srtest {
+            position: absolute;
+            display: block;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        #srtest:focus {
+            width: auto;
+            height: 32px;
+            overflow: hidden;
+        }
     </style>
 </head>
 
 <body>
+    <p id="srtest" tabindex="0" role="button" aira-hidden="false"
+        onfocus="document.getElementById('ads').style.display='none';"
+        alt="你似乎正在使用读屏等无障碍服务，本站已优化无障碍访问体验，若使用中有任何关于无障碍访问的建议，欢迎联系琴梨梨反馈">
+        你似乎正在使用读屏等无障碍服，本站已优化无障碍访问体验，若使用中有任何关于无障碍访问的建议，欢迎联系琴梨梨反馈</p>
     <div id="topMsg">
         <div id="msgZone">
             <p id="msgIcon"></p>
@@ -443,7 +461,7 @@
             <br>
             <p>本站仅使用官方API解析直连下载地址，并不能突破官方限速！请搭配IDM等工具实现大文件断点续传！</p>
         </div>
-        <div aria-label="推广" id="ads">
+        <div aria-label="推广" id="ads" aira-hidden="true">
             <div id="adsTop">
                 <p id="adinfo" style="font-weight:bolder">推广</p>
                 <p role="button" tabIndex="0" aria-label="关闭推广" id="closead"></p>
