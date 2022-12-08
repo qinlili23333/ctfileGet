@@ -1,5 +1,5 @@
 window.ctfile = {
-    version: () => { return "2.6.0" },
+    version: () => { return "2.6.1" },
     getByLink: (link, password, token, firstcallback) => {
         return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2), token, firstcallback);
     },
@@ -30,11 +30,13 @@ window.ctfile = {
             },
         })).text());
         if (jsonText.code == 200) {
-            firstcallback({
-                "name": jsonText.file.file_name,
-                "size": jsonText.file.file_size,
-                "time": jsonText.file.file_time,
-            })
+            if (firstcallback) {
+                firstcallback({
+                    "name": jsonText.file.file_name,
+                    "size": jsonText.file.file_size,
+                    "time": jsonText.file.file_time,
+                })
+            };
             if (jsonText.file.is_vip == 1) {
                 return {
                     "success": true,
