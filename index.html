@@ -36,6 +36,7 @@
                 loadSelfAd();
             } else {
                 msg.restore();
+                await sleep(1500);
                 if (localStorage.adPref && localStorage.adPref == "any") {
                     (adsbygoogle = window.adsbygoogle || []).push({});
                     await loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
@@ -655,8 +656,15 @@
         };
         window.addEventListener("message", async (event) => {
             console.log(event.data)
-            if (event.data == "old") {
-                location.href = "./legacy";
+            switch (event.data) {
+                case "old": {
+                    location.href = "./legacy";
+                    break;
+                };
+                case "privacy": {
+                    showFrameSet('./privacy.html');
+                    break;
+                };
             }
         }, false);
         //顶栏
