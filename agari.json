@@ -1,4 +1,4 @@
 {
     "type": "html",
-    "content": "<iframe style='width: 100%;aspect-ratio: 16 / 9;' src='https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=6374209&quality=0' frameborder='no' ramespacing='0' scrolling='no' allow='autoplay; encrypted-media' allowfullscreen='true'></iframe>"
+    "content": "<img style='width: 100%;object-fit:contain;height:auto;' src='https://union.lizhi.io/partner/product/325/poster?cid=fdhoo9c0' onclick='window.open(\"https://store.lizhi.io/site/products/id/325?cid=fdhoo9c0\",\"_blank\")'></img>"
 }
