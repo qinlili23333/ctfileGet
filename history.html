@@ -99,8 +99,8 @@
         const writeClipboard = async (element) => {
             const link = element.parentElement.dataset.link;
             const password = element.parentElement.dataset.pw;
-            await navigator.clipboard.writeText(`${link}密码: ${password}`);
-            element.querySelector('.mdc-button__label').innerText = '已复制';
+            await navigator.clipboard.writeText("asaki+" + btoa(encodeURI(`${link}|||${password}`)));
+            element.querySelector('.mdc-button__label').innerText = '已复制口令';
         }
         const store = localStorage.getItem("store")
         const records = JSON.parse(store)
@@ -119,7 +119,7 @@
                         <div>查询时间: ${r.queryTime}</div>
                         <button onclick="writeClipboard(this)" class="mdc-button foo-button">
                             <div class="mdc-button__ripple"></div>
-                            <span class="mdc-button__label">复制</span>
+                            <span class="mdc-button__label">复制口令</span>
                         </button>
                     </div>`)
             })

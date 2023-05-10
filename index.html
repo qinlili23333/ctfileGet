@@ -15,11 +15,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <script>
         window.addEventListener('DOMContentLoaded', async (event) => {
-            document.body.style.transform = "scale(1,1) ";
-            document.body.style.opacity = 1;
-            const loadSelfAd = async () => {
+            const loadSelfAd = () => {
                 console.log("加载自定义广告");
-                await loadScriptAsync("./agari.js");
+                loadScriptAsync("./agari.js");
             }
             await loadScriptAsync("./yuni.js");
             if (!localStorage.getItem("agreePrivacy")) {
@@ -38,8 +36,27 @@
                 msg.restore();
                 await sleep(1500);
                 if (localStorage.adPref && localStorage.adPref == "any") {
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                    await loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
+                    //Anti uBlock Origin
+                    (async () => {
+                        await sleep(2000);
+                        var xmlhttp = new XMLHttpRequest();
+                        xmlhttp.onreadystatechange = function () {
+                            if (this.readyState == 4) {
+                                if (this.status === 200) {
+                                    if (!this.responseURL.startsWith("https")) {
+                                        console.log("广告被拦截");
+                                        loadSelfAd();
+                                    } else {
+                                        (adsbygoogle = window.adsbygoogle || []).push({});
+                                        loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
+                                        document.getElementById("closead").style.display = "none";
+                                    }
+                                }
+                            }
+                        };
+                        xmlhttp.open("HEAD", "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", true);
+                        xmlhttp.send();
+                    })()
                 } else {
                     loadSelfAd();
                 }
@@ -112,8 +129,6 @@
         body {
             overflow: auto;
             min-width: 280px;
-            transform: scale(1, 0.1);
-            opacity: 0;
             transition: transform 0.3s, opacity 0.1s;
             position: fixed;
             height: 100%;
@@ -402,6 +417,8 @@
             <div class="inputdiv">
                 <input role="textbox" tabindex="0" id="link" name="链接或文件ID" placeholder="链接或文件ID">
                 <label for="link">链接或文件ID</label>
+                <p tabindex="0" id="folder" role="button" alt="从文件夹中选择" class="inputright"
+                    style="background-image:url(./icon/folder.svg);font-size: 0;display:none;">从文件夹中选择</p>
             </div>
             <div aria-labelledby="密码" class="inputdiv">
                 <input role="textbox" tabindex="0" id="pass" name="密码" placeholder="密码">
@@ -478,7 +495,7 @@
     </div>
 
     <script>
-        console.log("Codename Asaki - QINLILI 2022");
+        console.log("Codename Asaki - QINLILI 2023");
         window.ctfile = {
             version: () => { return "2.6.0" },
             getByLink: (link, password, token, firstcallback) => {
@@ -690,17 +707,7 @@
                 history.onclick = () => {
                     showFrameSet('./history.html');
                 };
-                const pay = document.createElement("p");
-                pay.className = "actBtn";
-                pay.style.width = "24px";
-                pay.style.backgroundRepeat = "round";
-                pay.style.backgroundImage = "url(./icon/pay.svg)";
-                pay.tabIndex = 0;
-                pay.setAttribute("aria-label", "赞助");
-                pay.onclick = () => {
-                    showFrameSet('https://qinlili.bid/Support/');
-                };
-                return msg.change("城通网盘解析器~", "./icon.webp", null, [history, pay, info]);
+                return msg.change("城通网盘解析器~", "./icon.webp", null, [history, info]);
             },
             change: (msg, icon, color, actions) => {
                 document.getElementById("msgText").innerText = msg;
@@ -739,19 +746,36 @@
             }
         };
         document.getElementById("closead").onclick = async () => {
-            for (let i = 0; i < 1000; i++) {
+            for (let i = 0; i < 1000;) {
                 document.getElementById("adinfo").innerText = "正在关闭广告..." + Number(i) / Number(10) + "%";
-                await sleep(0);
+                i += Math.round(Math.random() * 50);
+                await sleep(Math.round(Math.random() * 250));
             }
-            document.getElementById("ads").style.display = "none";
+            document.getElementById("ads").parentElement.removeChild(document.getElementById("ads"));
             await sleep(50);
             alert("广告已关闭！");
         };
         document.getElementById("link").addEventListener("change", () => {
             let link = document.getElementById("link").value;
+            if (link.startsWith("asaki+")) {
+                link = decodeURI(atob(link.substr(6))).split("|||");
+                document.getElementById("link").value = link[0];
+                document.getElementById("pass").value = link[1];
+                msg.change("已识别Asaki口令", "./icon/password.svg", "#86C166");
+                return true;
+            };
+            if (link.startsWith("xtc")) {
+                document.getElementById("link").value = link.substr(3, link.lastIndexOf("-") - 3);
+                document.getElementById("pass").value = link.substr(link.lastIndexOf("-") + 1);
+                msg.change("已识别小通口令", "./icon/password.svg", "#86C166");
+            };
             if (link.indexOf("http") != -1) {
                 link = new URL(link);
                 console.log(link);
+                if (link.pathname.startsWith("/d")) {
+                    msg.change("文件夹解析正在开发中", "./icon/error.svg", "rgba(232,48,21,0.6)");
+                    return false;
+                }
                 document.getElementById("link").value = link.pathname.substr(link.pathname.substr(1).indexOf("/") + 2);
                 if (link.searchParams.get("p")) {
                     msg.change("已识别密码", "./icon/password.svg", "#86C166");
