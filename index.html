@@ -875,9 +875,9 @@
                 }
                 let link = new URL(file.link);
                 let speed = Number(link.searchParams.get("spd")) * Number(link.searchParams.get("limit"));
-                document.getElementById("speed").innerText = "限速：" + bytesToSize(speed) + "/s";
+                document.getElementById("speed").innerText = "限速：" + (speed ? bytesToSize(speed) + "/s" : "无上限");
                 let time = sec_to_time(covertSizeToByte(file.size) / Number(speed));
-                document.getElementById("reqtime").innerText = "耗时：" + time;
+                document.getElementById("reqtime").innerText = "耗时：" + (speed ? time : "取决于网速");
                 document.getElementById("openlink").onclick = () => { window.open(file.link, "_blank") };
                 document.getElementById("copylink").onclick = () => {
                     if (navigator.clipboard) {
