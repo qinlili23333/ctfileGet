@@ -597,8 +597,8 @@
                 btn.className = "dlBtn";
                 btn.setAttribute("role", "button");
                 btn.title = "内置下载";
-                btn.addEventListener("mouseenter", event => { event.path[0].style.backgroundColor = "#86C166"; })
-                btn.addEventListener("mouseleave", event => { event.path[0].style.backgroundColor = "transparent"; })
+                btn.addEventListener("mouseenter", event => { event.composedPath()[0].style.backgroundColor = "#86C166"; })
+                btn.addEventListener("mouseleave", event => { event.composedPath()[0].style.backgroundColor = "transparent"; })
                 btn.style = "-webkit-tap-highlight-color: transparent;position:relative;display: flex;flex-direction: row;margin: 4px;height: 32px;border: 1px solid #666;border-radius: 4px;background-color: #ffffff;cursor: pointer;transition: background-color 0.5s;"
                 let dlicon = document.createElement("img");
                 dlicon.alt = "内置下载"
