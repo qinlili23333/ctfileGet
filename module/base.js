@@ -29,6 +29,7 @@ const util = {
 }
 let ModuleCache = {};
 const ModuleLoader = {
+    useRedbankLoaderGlobal: true,
     loadLocal: async (part, initList) => {
         Module = Object.assign(Module, part);
         await Module.autoinit.initList(initList ? initList : Object.keys(part));
