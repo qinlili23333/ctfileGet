@@ -13,73 +13,7 @@
     <link rel="apple-touch-icon" href="./apple-icon.png">
     <meta name="apple-mobile-web-app-title" content="城通解析">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <script>
-        window.addEventListener('DOMContentLoaded', async (event) => {
-            const loadSelfAd = () => {
-                console.log("加载自定义广告");
-                loadScriptAsync("./agari.js");
-            }
-            await loadScriptAsync("./yuni.js");
-            if (!localStorage.getItem("agreePrivacy")) {
-                let read = document.createElement("p");
-                read.className = "actBtn";
-                read.innerText = "查看";
-                read.setAttribute("aria-label", "查看隐私政策");
-                read.tabIndex = 0;
-                read.onclick = () => {
-                    showFrameSet('./privacy.html');
-                    msg.restore();
-                };
-                msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
-                loadSelfAd();
-            } else {
-                msg.restore();
-                await sleep(1500);
-                if (localStorage.adPref && localStorage.adPref == "any") {
-                    //Anti uBlock Origin
-                    (async () => {
-                        await sleep(2000);
-                        var xmlhttp = new XMLHttpRequest();
-                        xmlhttp.onreadystatechange = function () {
-                            if (this.readyState == 4) {
-                                if (this.status === 200) {
-                                    if (!this.responseURL.startsWith("https")) {
-                                        console.log("广告被拦截");
-                                        loadSelfAd();
-                                    } else {
-                                        (adsbygoogle = window.adsbygoogle || []).push({});
-                                        loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
-                                        document.getElementById("closead").style.display = "none";
-                                    }
-                                }
-                            }
-                        };
-                        xmlhttp.open("HEAD", "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", true);
-                        xmlhttp.send();
-                    })()
-                } else {
-                    loadSelfAd();
-                }
-            };
-            const buildToken = () => {
-                let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                document.getElementById("token").value = token;
-                localStorage.setItem("token", token);
-                return token;
-            }
-            document.getElementById("token").value = localStorage.getItem("token") ? (localStorage.getItem("token").length ? localStorage.getItem("token") : buildToken()) : buildToken();
-            if (location.search) {
-                let url = new URLSearchParams(location.search);
-                if (url.get("file")) {
-                    document.getElementById("link").value = url.get("file");
-                    if (url.get("pass")) {
-                        document.getElementById("pass").value = url.get("pass");
-                    }
-                    document.getElementById("localParse").click();
-                }
-            }
-        });
-    </script>
+    <script defer src="module/base.js"></script>
     <style>
         ::-webkit-scrollbar {
             height: 12px;
@@ -492,10 +426,75 @@
 
             </div>
         </div>
+        <script>
+            window.addEventListener('DOMContentLoaded', async (event) => {
+                const loadSelfAd = () => {
+                    console.log("加载自定义广告");
+                    loadScriptAsync("./agari.js");
+                }
+                if (!localStorage.getItem("agreePrivacy")) {
+                    let read = document.createElement("p");
+                    read.className = "actBtn";
+                    read.innerText = "查看";
+                    read.setAttribute("aria-label", "查看隐私政策");
+                    read.tabIndex = 0;
+                    read.onclick = () => {
+                        Module.yuni.showFrame('./privacy.html');
+                        msg.restore();
+                    };
+                    msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
+                    loadSelfAd();
+                } else {
+                    msg.restore();
+                    await sleep(1500);
+                    if (localStorage.adPref && localStorage.adPref == "any") {
+                        //Anti uBlock Origin
+                        (async () => {
+                            await sleep(2000);
+                            var xmlhttp = new XMLHttpRequest();
+                            xmlhttp.onreadystatechange = function () {
+                                if (this.readyState == 4) {
+                                    if (this.status === 200) {
+                                        if (!this.responseURL.startsWith("https")) {
+                                            console.log("广告被拦截");
+                                            loadSelfAd();
+                                        } else {
+                                            (adsbygoogle = window.adsbygoogle || []).push({});
+                                            loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
+                                            document.getElementById("closead").style.display = "none";
+                                        }
+                                    }
+                                }
+                            };
+                            xmlhttp.open("HEAD", "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", true);
+                            xmlhttp.send();
+                        })()
+                    } else {
+                        loadSelfAd();
+                    }
+                };
+                const buildToken = () => {
+                    let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    document.getElementById("token").value = token;
+                    localStorage.setItem("token", token);
+                    return token;
+                }
+                document.getElementById("token").value = localStorage.getItem("token") ? (localStorage.getItem("token").length ? localStorage.getItem("token") : buildToken()) : buildToken();
+                if (location.search) {
+                    let url = new URLSearchParams(location.search);
+                    if (url.get("file")) {
+                        document.getElementById("link").value = url.get("file");
+                        if (url.get("pass")) {
+                            document.getElementById("pass").value = url.get("pass");
+                        }
+                        document.getElementById("localParse").click();
+                    }
+                }
+            });
+        </script>
     </div>
 
     <script>
-        console.log("Codename Asaki - QINLILI 2023");
         window.ctfile = {
             version: () => { return "2.6.0" },
             getByLink: (link, password, token, firstcallback) => {
@@ -679,7 +678,7 @@
                     break;
                 };
                 case "privacy": {
-                    showFrameSet('./privacy.html');
+                    Module.yuni.showFrame('./privacy.html');
                     break;
                 };
             }
@@ -695,7 +694,7 @@
                 info.tabIndex = 0;
                 info.setAttribute("aria-label", "关于");
                 info.onclick = () => {
-                    showFrameSet('./about.html');
+                    Module.yuni.showFrame('./about.html');
                 };
                 const history = document.createElement("p");
                 history.className = "actBtn";
@@ -705,7 +704,7 @@
                 history.tabIndex = 0;
                 history.setAttribute("aria-label", "历史记录");
                 history.onclick = () => {
-                    showFrameSet('./history.html');
+                    Module.yuni.showFrame('./history.html');
                 };
                 return msg.change("城通网盘解析器~", "./icon.webp", null, [history, info]);
             },
