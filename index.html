@@ -430,51 +430,6 @@
         <script>
             window.addEventListener('DOMContentLoaded', async (event) => {
                 ModuleLoader.loadRemote("homeAddon");
-                const loadSelfAd = () => {
-                    console.log("加载自定义广告");
-                    util.loadScriptAsync("./agari.js");
-                }
-                if (!localStorage.getItem("agreePrivacy")) {
-                    let read = document.createElement("p");
-                    read.className = "actBtn";
-                    read.innerText = "查看";
-                    read.setAttribute("aria-label", "查看隐私政策");
-                    read.tabIndex = 0;
-                    read.onclick = () => {
-                        Module.yuni.showFrame('./privacy.html');
-                        msg.restore();
-                    };
-                    msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
-                    loadSelfAd();
-                } else {
-                    msg.restore();
-                    await util.sleep(1500);
-                    if (localStorage.adPref && localStorage.adPref == "any") {
-                        //Anti uBlock Origin
-                        (async () => {
-                            await util.sleep(2000);
-                            var xmlhttp = new XMLHttpRequest();
-                            xmlhttp.onreadystatechange = function () {
-                                if (this.readyState == 4) {
-                                    if (this.status === 200) {
-                                        if (!this.responseURL.startsWith("https")) {
-                                            console.log("广告被拦截");
-                                            loadSelfAd();
-                                        } else {
-                                            (adsbygoogle = window.adsbygoogle || []).push({});
-                                            util.loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
-                                            document.getElementById("closead").style.display = "none";
-                                        }
-                                    }
-                                }
-                            };
-                            xmlhttp.open("HEAD", "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", true);
-                            xmlhttp.send();
-                        })()
-                    } else {
-                        loadSelfAd();
-                    }
-                };
                 const buildToken = () => {
                     let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
                     document.getElementById("token").value = token;
