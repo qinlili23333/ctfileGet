@@ -155,6 +155,54 @@ let Module = {
         }
 
     },
+    msg: {
+        restore: () => {
+            const info = document.createElement("p");
+            info.className = "actBtn";
+            info.style.width = "24px";
+            info.style.backgroundRepeat = "round";
+            info.style.backgroundImage = "url(./icon/info.svg)";
+            info.tabIndex = 0;
+            info.setAttribute("aria-label", "关于");
+            info.onclick = () => {
+                Module.yuni.showFrame('./about.html');
+            };
+            const history = document.createElement("p");
+            history.className = "actBtn";
+            history.style.width = "24px";
+            history.style.backgroundRepeat = "round";
+            history.style.backgroundImage = "url(./icon/history.svg)";
+            history.tabIndex = 0;
+            history.setAttribute("aria-label", "历史记录");
+            history.onclick = () => {
+                Module.yuni.showFrame('./history.html');
+            };
+            return Module.msg.change("城通网盘解析器~", "./icon.webp", null, [history, info]);
+        },
+        change: (msg, icon, color, actions) => {
+            document.getElementById("msgText").innerText = msg;
+            document.getElementById("msgIcon").style.backgroundImage = icon ? `url(${icon})` : "none";
+            document.getElementById("topMsg").style.backgroundColor = color ? color : "#FFFFFF";
+            document.getElementById("actZone").innerHTML = "";
+            actions ? actions.forEach(btn => {
+                document.getElementById("actZone").appendChild(btn);
+                btn.setAttribute("role", "button");
+                if (!btn.id) {
+                    btn.id = "actBtn" + Math.random().toString(36).substr(2);
+                };
+                //let label = document.createElement("label");
+                //label.setAttribute("for", btn.id);
+                //label.innerText = btn.getAttribute("aria-label");
+                //document.getElementById("actZone").appendChild(label);
+            }) : null;
+        },
+        hide: () => {
+            document.getElementById("topMsg").style.display = "none";
+        },
+        show: () => {
+            document.getElementById("topMsg").style.display = "flex";
+        },
+    },
     yuni: {
         lazyinit: () => {
             util.loadCssCode(`#setFrame {

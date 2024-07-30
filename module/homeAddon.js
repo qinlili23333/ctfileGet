@@ -9,12 +9,12 @@ ModuleCache.homeAddon = {
                 read.tabIndex = 0;
                 read.onclick = () => {
                     Module.yuni.showFrame('./privacy.html');
-                    msg.restore();
+                    Module.msg.restore();
                 };
-                msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
+                Module.msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
                 Module.adLoader.loadSelfAd();
             } else {
-                msg.restore();
+                Module.msg.restore();
                 await util.sleep(1500);
                 if (localStorage.adPref && localStorage.adPref == "any") {
                     //Anti uBlock Origin

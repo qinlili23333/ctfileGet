@@ -12,7 +12,7 @@
     <link rel="icon" href="./icon.webp">
     <link rel="apple-touch-icon" href="./apple-icon.png">
     <meta name="apple-mobile-web-app-title" content="城通解析">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <script defer src="module/base.js"></script>
     <script defer src="ctget.js"></script>
     <style>
@@ -466,55 +466,7 @@
                 };
             }
         }, false);
-        //顶栏
-        const msg = {
-            restore: () => {
-                const info = document.createElement("p");
-                info.className = "actBtn";
-                info.style.width = "24px";
-                info.style.backgroundRepeat = "round";
-                info.style.backgroundImage = "url(./icon/info.svg)";
-                info.tabIndex = 0;
-                info.setAttribute("aria-label", "关于");
-                info.onclick = () => {
-                    Module.yuni.showFrame('./about.html');
-                };
-                const history = document.createElement("p");
-                history.className = "actBtn";
-                history.style.width = "24px";
-                history.style.backgroundRepeat = "round";
-                history.style.backgroundImage = "url(./icon/history.svg)";
-                history.tabIndex = 0;
-                history.setAttribute("aria-label", "历史记录");
-                history.onclick = () => {
-                    Module.yuni.showFrame('./history.html');
-                };
-                return msg.change("城通网盘解析器~", "./icon.webp", null, [history, info]);
-            },
-            change: (msg, icon, color, actions) => {
-                document.getElementById("msgText").innerText = msg;
-                document.getElementById("msgIcon").style.backgroundImage = icon ? `url(${icon})` : "none";
-                document.getElementById("topMsg").style.backgroundColor = color ? color : "#FFFFFF";
-                document.getElementById("actZone").innerHTML = "";
-                actions ? actions.forEach(btn => {
-                    document.getElementById("actZone").appendChild(btn);
-                    btn.setAttribute("role", "button");
-                    if (!btn.id) {
-                        btn.id = "actBtn" + Math.random().toString(36).substr(2);
-                    };
-                    //let label = document.createElement("label");
-                    //label.setAttribute("for", btn.id);
-                    //label.innerText = btn.getAttribute("aria-label");
-                    //document.getElementById("actZone").appendChild(label);
-                }) : null;
-            },
-            hide: () => {
-                document.getElementById("topMsg").style.display = "none";
-            },
-            show: () => {
-                document.getElementById("topMsg").style.display = "flex";
-            },
-        };
+
         const emptyfile = () => {
             document.getElementById("filename").value = "";
             document.getElementById("dllink").value = "";
@@ -543,32 +495,32 @@
                 link = decodeURI(atob(link.substr(6))).split("|||");
                 document.getElementById("link").value = link[0];
                 document.getElementById("pass").value = link[1];
-                msg.change("已识别Asaki口令", "./icon/password.svg", "#86C166");
+                Module.msg.change("已识别Asaki口令", "./icon/password.svg", "#86C166");
                 return true;
             };
             if (link.startsWith("xtc")) {
                 document.getElementById("link").value = link.substr(3, link.lastIndexOf("-") - 3);
                 document.getElementById("pass").value = link.substr(link.lastIndexOf("-") + 1);
-                msg.change("已识别小通口令", "./icon/password.svg", "#86C166");
+                Module.msg.change("已识别小通口令", "./icon/password.svg", "#86C166");
             };
             if (link.indexOf("http") != -1) {
                 link = new URL(link);
                 console.log(link);
                 if (link.pathname.startsWith("/d")) {
-                    msg.change("文件夹解析正在开发中", "./icon/error.svg", "rgba(232,48,21,0.6)");
+                    Module.msg.change("文件夹解析正在开发中", "./icon/error.svg", "rgba(232,48,21,0.6)");
                     return false;
                 }
                 document.getElementById("link").value = link.pathname.substr(link.pathname.substr(1).indexOf("/") + 2);
                 if (link.searchParams.get("p")) {
-                    msg.change("已识别密码", "./icon/password.svg", "#86C166");
+                    Module.msg.change("已识别密码", "./icon/password.svg", "#86C166");
                     document.getElementById("autopass").style.filter = "none";
                     document.getElementById("pass").value = link.searchParams.get("p");
-                    setTimeout(msg.restore, 3000);
+                    setTimeout(Module.msg.restore, 3000);
                 };
             };
             if (document.getElementById("link").value.split("-").length < 2) {
-                msg.change("无效的地址或ID", "./icon/error.svg", "rgba(232,48,21,0.6)");
-                setTimeout(msg.restore, 3000);
+                Module.msg.change("无效的地址或ID", "./icon/error.svg", "rgba(232,48,21,0.6)");
+                setTimeout(Module.msg.restore, 3000);
             };
         });
         document.getElementById("pass").addEventListener("change", () => {
@@ -664,15 +616,15 @@
                 document.getElementById("copylink").onclick = () => {
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(file.link).then(() => {
-                            msg.change("已复制链接", "./icon/copy.svg", "#86C166")
-                            setTimeout(msg.restore, 3000);
+                            Module.msg.change("已复制链接", "./icon/copy.svg", "#86C166")
+                            setTimeout(Module.msg.restore, 3000);
                         }, () => {
-                            msg.change("复制失败，请尝试手动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
+                            Module.msg.change("复制失败，请尝试手动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
                             document.getElementById("dllink").focus();
                             document.getElementById("dllink").select();
                         })
                     } else {
-                        msg.change("浏览器不支持自动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
+                        Module.msg.change("浏览器不支持自动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
                         document.getElementById("dllink").focus();
                         document.getElementById("dllink").select();
                     }
@@ -696,9 +648,9 @@
                     localStorage.setItem("store", JSON.stringify([record]))
                 }
             } else {
-                msg.change(file.errormsg, "./icon/error.svg", "rgba(232,48,21,0.6)");
+                Module.msg.change(file.errormsg, "./icon/error.svg", "rgba(232,48,21,0.6)");
                 document.getElementById("fileinfo").style.display = "none";
-                setTimeout(msg.restore, 5000);
+                setTimeout(Module.msg.restore, 5000);
             }
         };
         document.getElementById("cloudParse").onclick = async () => {
