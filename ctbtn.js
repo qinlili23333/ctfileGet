@@ -1,6 +1,6 @@
 (() => {
     const ctfile = {
-        version: "2.6.5-button",
+        version: "2.6.5.1-button",
         IconPack: {
             load: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0iI2U4N2E5MCI+DQogICAgPHBhdGggb3BhY2l0eT0iLjI1IiBkPSJNMTYgMCBBMTYgMTYgMCAwIDAgMTYgMzIgQTE2IDE2IDAgMCAwIDE2IDAgTTE2IDQgQTEyIDEyIDAgMCAxIDE2IDI4IEExMiAxMiAwIDAgMSAxNiA0IiAvPg0KICAgIDxwYXRoIGQ9Ik0xNiAwIEExNiAxNiAwIDAgMSAzMiAxNiBMMjggMTYgQTEyIDEyIDAgMCAwIDE2IDR6Ij4NCiAgICAgICAgPGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIiB0eXBlPSJyb3RhdGUiIGZyb209IjAgMTYgMTYiIHRvPSIzNjAgMTYgMTYiIGR1cj0iMnMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiAvPg0KICAgIDwvcGF0aD4NCjwvc3ZnPg==",
             fail: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0NEgzOEMzOS4xMDQ2IDQ0IDQwIDQzLjEwNDYgNDAgNDJWMTRMMzEgNEgxMEM4Ljg5NTQzIDQgOCA0Ljg5NTQzIDggNlY0MkM4IDQzLjEwNDYgOC44OTU0MyA0NCAxMCA0NFoiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTggMjJMMzAgMzQiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzAgMjJMMTggMzQiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzAgNFYxNEg0MCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==",
@@ -27,8 +27,8 @@
                     btn.style.cursor = "pointer";
                     btn.title = fileInfo.name;
                     title.innerText = fileInfo.size;
-                    btn.addEventListener("mouseenter", event => { event.path[0].style.backgroundColor = "#86C166"; })
-                    btn.addEventListener("mouseleave", event => { event.path[0].style.backgroundColor = isOutDate ? "#EB7A77" : "#A8D8B9"; })
+                    btn.addEventListener("mouseenter", event => { event.composedPath()[0].style.backgroundColor = "#86C166"; })
+                    btn.addEventListener("mouseleave", event => { event.composedPath()[0].style.backgroundColor = isOutDate ? "#EB7A77" : "#A8D8B9"; })
                     btn.addEventListener("click", () => {
                         if (isOutDate) {
                             btn.style.backgroundColor = "";
