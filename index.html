@@ -432,7 +432,7 @@
                 ModuleLoader.loadRemote("homeAddon");
                 const loadSelfAd = () => {
                     console.log("加载自定义广告");
-                    loadScriptAsync("./agari.js");
+                    util.loadScriptAsync("./agari.js");
                 }
                 if (!localStorage.getItem("agreePrivacy")) {
                     let read = document.createElement("p");
@@ -448,11 +448,11 @@
                     loadSelfAd();
                 } else {
                     msg.restore();
-                    await sleep(1500);
+                    await util.sleep(1500);
                     if (localStorage.adPref && localStorage.adPref == "any") {
                         //Anti uBlock Origin
                         (async () => {
-                            await sleep(2000);
+                            await util.sleep(2000);
                             var xmlhttp = new XMLHttpRequest();
                             xmlhttp.onreadystatechange = function () {
                                 if (this.readyState == 4) {
@@ -462,7 +462,7 @@
                                             loadSelfAd();
                                         } else {
                                             (adsbygoogle = window.adsbygoogle || []).push({});
-                                            loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
+                                            util.loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
                                             document.getElementById("closead").style.display = "none";
                                         }
                                     }
@@ -498,16 +498,6 @@
 
     <script>
 
-        const sleep = delay => new Promise((resolve) => setTimeout(resolve, delay));
-        const loadScriptAsync = link => {
-            return new Promise(resolve => {
-                let script = document.createElement("script");
-                script.src = link;
-                script.onload = resolve;
-                script.crossOrigin = "anonymous";
-                document.body.appendChild(script);
-            });
-        };
         window.addEventListener("message", async (event) => {
             console.log(event.data)
             switch (event.data) {
@@ -586,10 +576,10 @@
             for (let i = 0; i < 1000;) {
                 document.getElementById("adinfo").innerText = "正在关闭广告..." + Number(i) / Number(10) + "%";
                 i += Math.round(Math.random() * 50);
-                await sleep(Math.round(Math.random() * 250));
+                await util.sleep(Math.round(Math.random() * 250));
             }
             document.getElementById("ads").parentElement.removeChild(document.getElementById("ads"));
-            await sleep(50);
+            await util.sleep(50);
             alert("广告已关闭！");
         };
         document.getElementById("link").addEventListener("change", () => {
@@ -634,7 +624,7 @@
         })
         document.getElementById("autopass").onclick = async () => {
             document.getElementById("pass").value = "547873715";
-            await sleep(10);
+            await util.sleep(10);
             document.getElementById("autopass").style.filter = "invert(65%) sepia(20%) saturate(754%) hue-rotate(95deg) brightness(90%) contrast(89%)";
         };
         document.getElementById("tokenhelp").onclick = () => {
