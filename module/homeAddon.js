@@ -1,6 +1,9 @@
 ModuleCache.homeAddon = {
     adLoader: {
-        init: async () => {
+        done: false,
+        lazyinit: async () => {
+            if (Module.adLoader.done) return;
+            document.getElementById("ads").style.display = "block";
             if (!localStorage.getItem("agreePrivacy")) {
                 let read = document.createElement("p");
                 read.className = "actBtn";
@@ -31,6 +34,7 @@ ModuleCache.homeAddon = {
                                         (adsbygoogle = window.adsbygoogle || []).push({});
                                         util.loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
                                         document.getElementById("closead").style.display = "none";
+                                        Module.adLoader.done = true;
                                     }
                                 }
                             }
@@ -56,7 +60,8 @@ ModuleCache.homeAddon = {
                 case "html": {
                     document.getElementById("selfad").innerHTML = adinfo.content;
                 }
-            }
+            };
+            Module.adLoader.done = true;
         }
     }
 }
