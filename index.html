@@ -103,7 +103,7 @@
             margin: 2px;
             width: 28px;
             height: 28px;
-            background-image: url(./icon.webp);
+            background-image: url(./icon/loading.svg);
             background-size: 100% 100%;
         }
 
@@ -343,7 +343,7 @@
     <div id="topMsg">
         <div id="msgZone">
             <p id="msgIcon"></p>
-            <p id="msgText">城通网盘解析器~</p>
+            <p id="msgText">正在加载组件( •̀ .̫ •́ )✧</p>
         </div>
         <div id="actZone"></div>
     </div>
@@ -430,6 +430,7 @@
         </div>
         <script>
             window.addEventListener('DOMContentLoaded', async (event) => {
+                Module.msg.restore();
                 ModuleLoader.loadRemote("homeAddon");
                 const buildToken = () => {
                     let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

@@ -177,7 +177,7 @@ let Module = {
             history.onclick = () => {
                 Module.yuni.showFrame('./history.html');
             };
-            return Module.msg.change("城通网盘解析器~", "./icon.webp", null, [history, info]);
+            return Module.msg.change("城通网盘解析器～(∠・ω< )⌒☆", "./icon.webp", null, [history, info]);
         },
         change: (msg, icon, color, actions) => {
             document.getElementById("msgText").innerText = msg;
