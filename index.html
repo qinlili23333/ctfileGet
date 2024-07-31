@@ -506,7 +506,7 @@
                 Module.msg.change("已识别小通口令", "./icon/password.svg", "#86C166");
             };
             if (link.indexOf("http") != -1) {
-                link = new URL(link);
+                link = new URL(link.substr(link.indexOf("http")));
                 console.log(link);
                 if (link.pathname.startsWith("/d")) {
                     Module.msg.change("文件夹解析正在开发中", "./icon/error.svg", "rgba(232,48,21,0.6)");
@@ -516,7 +516,11 @@
                 if (link.searchParams.get("p")) {
                     Module.msg.change("已识别密码", "./icon/password.svg", "#86C166");
                     document.getElementById("autopass").style.filter = "none";
-                    document.getElementById("pass").value = link.searchParams.get("p");
+                    let pass = link.searchParams.get("p");
+                    if (pass.indexOf("(") != -1) {
+                        pass = pass.substr(0, pass.indexOf("(")).trim();
+                    };
+                    document.getElementById("pass").value = pass;
                     setTimeout(Module.msg.restore, 3000);
                 };
             };
