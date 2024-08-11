@@ -34,7 +34,7 @@ ModuleCache.homeAddon = {
             };
         },
         lazyinit: async () => {
-            if (Module.adLoader.done) return;
+            if (Module.adLoader.done || window.disableAds) return;
             document.getElementById("ads").style.display = "block";
             if (localStorage.adPref && localStorage.adPref == "any") {
                 //Anti uBlock Origin
