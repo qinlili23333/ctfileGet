@@ -4,13 +4,13 @@
     <H4 id="update" style="padding:10px;">版本：Asaki(V2) 2.3.1</H4>
     <H5>程序：<a href="https://qinlili.bid" target="_blank">琴梨梨</a></H5>
     <br>
-    <button onclick="window.parent.postMessage('old', '*');">
+    <button onclick="location.href = './legacy';">
         返回经典版</button>
     <br>
     <button onclick="window.open('https://github.com/qinlili23333/ctfileGet', '_blank');">
         查看源码</button>
     <br>
-    <p><a href="javascript:window.parent.postMessage('privacy', '*')">隐私协议</a></p>
+    <p><a href="javascript:Module.yuni.showNative('privacy');">隐私协议</a></p>
     <br>
     <p><a href="https://icp.gov.moe/?keyword=20225033" target="_blank">萌ICP备20225033号</a></p>
     <br>

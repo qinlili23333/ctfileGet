@@ -17,7 +17,7 @@ ModuleCache.homeAddon = {
                 read.setAttribute("aria-label", "查看隐私政策");
                 read.tabIndex = 0;
                 read.onclick = () => {
-                    Module.yuni.showFrame('./privacy.html');
+                    Module.yuni.showNative('privacy');
                     Module.msg.restore();
                 };
                 Module.msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);

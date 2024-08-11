@@ -140,7 +140,7 @@
             overflow-y: overlay;
         }
 
-        input {
+        input[role="textbox"] {
             padding-right: 40px;
             height: 26px;
             width: 100%;
@@ -150,20 +150,21 @@
             transition: all 0.2s ease-out;
             border: none;
             border-bottom: 1px solid #777777;
+
+            &:focus-visible {
+                outline: none;
+                border-bottom: 4px solid #35f39a !important;
+            }
+
+            &:hover {
+                border-bottom: 2px solid #333333;
+            }
+
+            &:active {
+                border-bottom: 4px solid #35f39a !important;
+            }
         }
 
-        input:focus-visible {
-            outline: none;
-            border-bottom: 4px solid #35f39a !important;
-        }
-
-        input:hover {
-            border-bottom: 2px solid #333333;
-        }
-
-        input:active {
-            border-bottom: 4px solid #35f39a !important;
-        }
 
         #parse {
             display: flex;
@@ -179,22 +180,20 @@
             background-color: #ffffff;
             padding-left: 4px;
             padding-right: 4px;
-            height: 32px;
             line-height: 32px;
             font-weight: bolder;
             font-size: 1.2em;
             transition: all 0.2s;
-        }
 
+            &:hover {
+                border: 1px solid #777777;
+                background-color: #aaaaaa;
+            }
 
-        .parseBtn:hover {
-            border: 1px solid #777777;
-            background-color: #aaaaaa;
-        }
-
-        .parseBtn:active {
-            border: 1px solid #000000;
-            background-color: #777777;
+            &:active {
+                border: 1px solid #000000;
+                background-color: #777777;
+            }
         }
 
         .btnIcon {
@@ -243,6 +242,13 @@
 
         .inputdiv {
             position: relative;
+
+            &>label {
+                display: block;
+                width: 0;
+                height: 0;
+                overflow: hidden;
+            }
         }
 
         .inputright {
@@ -287,14 +293,14 @@
             border-radius: 4px;
             transition: background-color 0.2s ease-in-out;
             cursor: pointer;
-        }
 
-        .dlBtn:hover {
-            background-color: rgba(134, 193, 102, 0.5);
-        }
+            &:hover {
+                background-color: rgba(134, 193, 102, 0.5);
+            }
 
-        .dlBtn:active {
-            background-color: rgba(134, 193, 102, 1);
+            &:active {
+                background-color: rgba(134, 193, 102, 1);
+            }
         }
 
         .dlBtnIcon {
@@ -310,13 +316,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        label {
-            display: block;
-            width: 0;
-            height: 0;
-            overflow: hidden;
+            line-height: 28px;
         }
 
         #srtest {
@@ -342,14 +342,14 @@
             transition: background-color 0.25s ease-in-out;
             margin: 3px;
             min-width: 60%;
-        }
 
-        button:hover {
-            background-color: #ccc;
-        }
+            &:hover {
+                background-color: #ccc;
+            }
 
-        button:active {
-            background-color: #999;
+            &:active {
+                background-color: #999;
+            }
         }
     </style>
 </head>

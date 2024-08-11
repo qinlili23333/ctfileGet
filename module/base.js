@@ -66,6 +66,22 @@ const util = {
         sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat(bytes / Math.pow(k, i)).toFixed(2) + sizes[i];                                                                                                      //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+    },
+    setInnerHTML: (elm, html) => {
+        elm.innerHTML = html;
+        Array.from(elm.querySelectorAll("script"))
+            .forEach(oldScriptEl => {
+                const newScriptEl = document.createElement("script");
+
+                Array.from(oldScriptEl.attributes).forEach(attr => {
+                    newScriptEl.setAttribute(attr.name, attr.value)
+                });
+
+                const scriptText = document.createTextNode(oldScriptEl.innerHTML);
+                newScriptEl.appendChild(scriptText);
+
+                oldScriptEl.parentNode.replaceChild(newScriptEl, oldScriptEl);
+            });
     }
 }
 let ModuleCache = {};
@@ -334,10 +350,7 @@ right: 0px;
                 console.log(event.data)
                 if (typeof event.data == "string") {
                     if (event.data == "close") {
-                        document.getElementById("yuniContainer").style.opacity = 0;
-                        document.getElementById("yuni").style.marginTop = "100vh";
-                        await util.sleep(500);
-                        document.getElementById("yuniContainer").style.display = "none";
+                        Module.yuni.close();
                     }
                     if (event.data.startsWith("http")) {
                         document.getElementById("loading").style.display = "block";
@@ -372,7 +385,7 @@ right: 0px;
                 newFrame.style.overflow = "auto";
                 document.getElementById("closeBtn").insertAdjacentElement("afterend", newFrame);
                 fetch("/yuni/" + url + ".yuniml").then(response => response.text()).then(data => {
-                    newFrame.innerHTML = data;
+                    util.setInnerHTML(newFrame, data);
                     newFrame.style.padding = "0px";
                     document.getElementById("loading").style.display = "none";
                 });
@@ -380,13 +393,16 @@ right: 0px;
                     document.getElementById("yuniFrame").style.maxWidth = "100vw";
                 }
             };
-            document.getElementById("closeBtn").addEventListener("click", async (event) => {
-                event.stopPropagation();
+            Module.yuni.close = async () => {
                 document.getElementById("yuni").style.marginTop = "100vh";
                 document.getElementById("yuniContainer").style.opacity = 0;
                 await util.sleep(500);
                 document.getElementById("yuniContainer").style.display = "none";
                 document.getElementById("yuni").removeChild(document.getElementById("yuniFrame"));
+            };
+            document.getElementById("closeBtn").addEventListener("click", async (event) => {
+                event.stopPropagation();
+                Module.yuni.close();
             })
         },
         showFrame: async (url, wide) => {
