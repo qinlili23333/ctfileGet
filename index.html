@@ -12,74 +12,9 @@
     <link rel="icon" href="./icon.webp">
     <link rel="apple-touch-icon" href="./apple-icon.png">
     <meta name="apple-mobile-web-app-title" content="城通解析">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <script>
-        window.addEventListener('DOMContentLoaded', async (event) => {
-            const loadSelfAd = () => {
-                console.log("加载自定义广告");
-                loadScriptAsync("./agari.js");
-            }
-            await loadScriptAsync("./yuni.js");
-            if (!localStorage.getItem("agreePrivacy")) {
-                let read = document.createElement("p");
-                read.className = "actBtn";
-                read.innerText = "查看";
-                read.setAttribute("aria-label", "查看隐私政策");
-                read.tabIndex = 0;
-                read.onclick = () => {
-                    showFrameSet('./privacy.html');
-                    msg.restore();
-                };
-                msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
-                loadSelfAd();
-            } else {
-                msg.restore();
-                await sleep(1500);
-                if (localStorage.adPref && localStorage.adPref == "any") {
-                    //Anti uBlock Origin
-                    (async () => {
-                        await sleep(2000);
-                        var xmlhttp = new XMLHttpRequest();
-                        xmlhttp.onreadystatechange = function () {
-                            if (this.readyState == 4) {
-                                if (this.status === 200) {
-                                    if (!this.responseURL.startsWith("https")) {
-                                        console.log("广告被拦截");
-                                        loadSelfAd();
-                                    } else {
-                                        (adsbygoogle = window.adsbygoogle || []).push({});
-                                        loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
-                                        document.getElementById("closead").style.display = "none";
-                                    }
-                                }
-                            }
-                        };
-                        xmlhttp.open("HEAD", "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", true);
-                        xmlhttp.send();
-                    })()
-                } else {
-                    loadSelfAd();
-                }
-            };
-            const buildToken = () => {
-                let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                document.getElementById("token").value = token;
-                localStorage.setItem("token", token);
-                return token;
-            }
-            document.getElementById("token").value = localStorage.getItem("token") ? (localStorage.getItem("token").length ? localStorage.getItem("token") : buildToken()) : buildToken();
-            if (location.search) {
-                let url = new URLSearchParams(location.search);
-                if (url.get("file")) {
-                    document.getElementById("link").value = url.get("file");
-                    if (url.get("pass")) {
-                        document.getElementById("pass").value = url.get("pass");
-                    }
-                    document.getElementById("localParse").click();
-                }
-            }
-        });
-    </script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <script defer src="module/base.js"></script>
+    <script defer src="ctget.js"></script>
     <style>
         ::-webkit-scrollbar {
             height: 12px;
@@ -168,7 +103,7 @@
             margin: 2px;
             width: 28px;
             height: 28px;
-            background-image: url(./icon.webp);
+            background-image: url(./icon/loading.svg);
             background-size: 100% 100%;
         }
 
@@ -205,7 +140,7 @@
             overflow-y: overlay;
         }
 
-        input {
+        input[role="textbox"] {
             padding-right: 40px;
             height: 26px;
             width: 100%;
@@ -215,20 +150,21 @@
             transition: all 0.2s ease-out;
             border: none;
             border-bottom: 1px solid #777777;
+
+            &:focus-visible {
+                outline: none;
+                border-bottom: 4px solid #35f39a !important;
+            }
+
+            &:hover {
+                border-bottom: 2px solid #333333;
+            }
+
+            &:active {
+                border-bottom: 4px solid #35f39a !important;
+            }
         }
 
-        input:focus-visible {
-            outline: none;
-            border-bottom: 4px solid #35f39a !important;
-        }
-
-        input:hover {
-            border-bottom: 2px solid #333333;
-        }
-
-        input:active {
-            border-bottom: 4px solid #35f39a !important;
-        }
 
         #parse {
             display: flex;
@@ -244,22 +180,20 @@
             background-color: #ffffff;
             padding-left: 4px;
             padding-right: 4px;
-            height: 32px;
             line-height: 32px;
             font-weight: bolder;
             font-size: 1.2em;
             transition: all 0.2s;
-        }
 
+            &:hover {
+                border: 1px solid #777777;
+                background-color: #aaaaaa;
+            }
 
-        .parseBtn:hover {
-            border: 1px solid #777777;
-            background-color: #aaaaaa;
-        }
-
-        .parseBtn:active {
-            border: 1px solid #000000;
-            background-color: #777777;
+            &:active {
+                border: 1px solid #000000;
+                background-color: #777777;
+            }
         }
 
         .btnIcon {
@@ -269,6 +203,7 @@
         }
 
         #ads {
+            display: none;
             min-height: 50vh;
             margin-top: 32px;
             width: 100%;
@@ -307,6 +242,13 @@
 
         .inputdiv {
             position: relative;
+
+            &>label {
+                display: block;
+                width: 0;
+                height: 0;
+                overflow: hidden;
+            }
         }
 
         .inputright {
@@ -351,14 +293,14 @@
             border-radius: 4px;
             transition: background-color 0.2s ease-in-out;
             cursor: pointer;
-        }
 
-        .dlBtn:hover {
-            background-color: rgba(134, 193, 102, 0.5);
-        }
+            &:hover {
+                background-color: rgba(134, 193, 102, 0.5);
+            }
 
-        .dlBtn:active {
-            background-color: rgba(134, 193, 102, 1);
+            &:active {
+                background-color: rgba(134, 193, 102, 1);
+            }
         }
 
         .dlBtnIcon {
@@ -374,13 +316,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        label {
-            display: block;
-            width: 0;
-            height: 0;
-            overflow: hidden;
+            line-height: 28px;
         }
 
         #srtest {
@@ -396,18 +332,36 @@
             height: 32px;
             overflow: hidden;
         }
+
+        button {
+            font-size: 1.3em;
+            padding: 3px;
+            border: 1px solid #999 !important;
+            background-color: white;
+            border-radius: 4px !important;
+            transition: background-color 0.25s ease-in-out;
+            margin: 3px;
+            min-width: 60%;
+
+            &:hover {
+                background-color: #ccc;
+            }
+
+            &:active {
+                background-color: #999;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <p id="srtest" tabindex="0" role="button" aira-hidden="false"
-        onfocus="document.getElementById('ads').style.display='none';"
+    <p id="srtest" tabindex="0" role="button" aira-hidden="false" onfocus="window.disableAds = true;"
         alt="你似乎正在使用读屏等无障碍服务，本站已优化无障碍访问体验，若使用中有任何关于无障碍访问的建议，欢迎联系琴梨梨反馈">
         你似乎正在使用读屏等无障碍服，本站已优化无障碍访问体验，若使用中有任何关于无障碍访问的建议，欢迎联系琴梨梨反馈</p>
     <div id="topMsg">
         <div id="msgZone">
             <p id="msgIcon"></p>
-            <p id="msgText">城通网盘解析器~</p>
+            <p id="msgText">正在加载组件( •̀ .̫ •́ )✧</p>
         </div>
         <div id="actZone"></div>
     </div>
@@ -495,244 +449,21 @@
     </div>
 
     <script>
-        console.log("Codename Asaki - QINLILI 2023");
-        window.ctfile = {
-            version: () => { return "2.6.0" },
-            getByLink: (link, password, token, firstcallback) => {
-                return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2), token, firstcallback);
-            },
-            getByID: async (fileid, password, token, firstcallback) => {
-                const origin = () => {
-                    //兼容node.js
-                    if (document && !(document.location.origin == 'file://')) {
-                        return document.location.origin;
-                    } else {
-                        return "https://ctfile.qinlili.workers.dev";
+        window.addEventListener('DOMContentLoaded', async (event) => {
+            Module.msg.restore();
+            ModuleLoader.loadRemote("homeAddon");
+            document.getElementById("token").value = localStorage.getItem("token") ? (localStorage.getItem("token").length ? localStorage.getItem("token") : Module.ctfile.buildToken()) : Module.ctfile.buildToken();
+            if (location.search) {
+                let url = new URLSearchParams(location.search);
+                if (url.get("file")) {
+                    document.getElementById("link").value = url.get("file");
+                    if (url.get("pass")) {
+                        document.getElementById("pass").value = url.get("pass");
                     }
-                };
-                const path = id => {
-                    switch (id.split("-").length) {
-                        case 2: {
-                            return "file";
-                        };
-                        case 3:
-                        default: {
-                            return "f";
-                        }
-                    }
-                }
-                jsonText = JSON.parse(await (await fetch("https://webapi.ctfile.com/getfile.php?path=" + path(fileid) + "&f=" + fileid + "&passcode=" + password + "&token=" + token + "&r=" + Math.random() + "&ref=" + origin(), {
-                    "headers": {
-                        "origin": origin(),
-                        "referer": origin()
-                    },
-                })).text());
-                if (jsonText.code == 200) {
-                    firstcallback({
-                        "name": jsonText.file.file_name,
-                        "size": jsonText.file.file_size,
-                        "time": jsonText.file.file_time,
-                    })
-                    if (jsonText.file.is_vip == 1) {
-                        return {
-                            "success": true,
-                            "name": jsonText.file.file_name,
-                            "size": jsonText.file.file_size,
-                            "time": jsonText.file.file_time,
-                            "link": jsonText.file.vip_dx_url
-                        };
-                    } else {
-                        jsonText2 = JSON.parse(await (await fetch("https://webapi.ctfile.com/get_file_url.php?uid=" + jsonText.file.userid + "&fid=" + jsonText.file.file_id + "&file_chk=" + jsonText.file.file_chk + "&app=0&acheck=2&rd=" + Math.random(), {
-                            "headers": {
-                                "origin": origin(),
-                                "referer": origin()
-                            },
-                        })).text());
-                        if (jsonText2.code == 200) {
-                            return {
-                                "success": true,
-                                "name": jsonText.file.file_name,
-                                "size": jsonText.file.file_size,
-                                "time": jsonText.file.file_time,
-                                "link": jsonText2.downurl
-                            };
-                        } else {
-                            if (jsonText2.code == 302) {
-                                return {
-                                    "success": false,
-                                    "name": jsonText.file.file_name,
-                                    "size": jsonText.file.file_size,
-                                    "time": jsonText.file.file_time,
-                                    "errormsg": "需要登录！"
-                                };
-                            } else {
-                                return {
-                                    "success": false,
-                                    "name": jsonText.file.file_name,
-                                    "size": jsonText.file.file_size,
-                                    "time": jsonText.file.file_time,
-                                    "errormsg": jsonText2.message
-                                };
-                            }
-                        }
-                    }
-                } else {
-                    return {
-                        "success": false,
-                        "errormsg": jsonText.file.message
-                    };
+                    document.getElementById("localParse").click();
                 }
             }
-        }
-        window.blobBtn = {
-            version: "1.0.0",
-            IconPack: {
-                load: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0iI2U4N2E5MCI+DQogICAgPHBhdGggb3BhY2l0eT0iLjI1IiBkPSJNMTYgMCBBMTYgMTYgMCAwIDAgMTYgMzIgQTE2IDE2IDAgMCAwIDE2IDAgTTE2IDQgQTEyIDEyIDAgMCAxIDE2IDI4IEExMiAxMiAwIDAgMSAxNiA0IiAvPg0KICAgIDxwYXRoIGQ9Ik0xNiAwIEExNiAxNiAwIDAgMSAzMiAxNiBMMjggMTYgQTEyIDEyIDAgMCAwIDE2IDR6Ij4NCiAgICAgICAgPGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIiB0eXBlPSJyb3RhdGUiIGZyb209IjAgMTYgMTYiIHRvPSIzNjAgMTYgMTYiIGR1cj0iMnMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiAvPg0KICAgIDwvcGF0aD4NCjwvc3ZnPg==",
-                fail: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0NEgzOEMzOS4xMDQ2IDQ0IDQwIDQzLjEwNDYgNDAgNDJWMTRMMzEgNEgxMEM4Ljg5NTQzIDQgOCA0Ljg5NTQzIDggNlY0MkM4IDQzLjEwNDYgOC44OTU0MyA0NCAxMCA0NFoiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTggMjJMMzAgMzQiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzAgMjJMMTggMzQiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzAgNFYxNEg0MCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==",
-                down: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC4wMSIvPjxwYXRoIGQ9Ik0xMS42Nzc3IDIwLjI3MUM3LjI3NDc2IDIxLjMxODEgNCAyNS4yNzY2IDQgMzBDNCAzNS41MjI4IDguNDc3MTUgNDAgMTQgNDBWNDBDMTQuOTQ3NCA0MCAxNS44NjQgMzkuODY4MyAxNi43MzI1IDM5LjYyMjEiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzYuMDU0NyAyMC4yNzFDNDAuNDU3NyAyMS4zMTgxIDQzLjczMjQgMjUuMjc2NiA0My43MzI0IDMwQzQzLjczMjQgMzUuNTIyOCAzOS4yNTUzIDQwIDMzLjczMjQgNDBWNDBDMzIuNzg1IDQwIDMxLjg2ODQgMzkuODY4MyAzMC45OTk5IDM5LjYyMjEiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzYgMjBDMzYgMTMuMzcyNiAzMC42Mjc0IDggMjQgOEMxNy4zNzI2IDggMTIgMTMuMzcyNiAxMiAyMCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNy4wNjU0IDMwLjExOUwyMy45OTk5IDM3LjA3NjRMMzEuMTMxOCAzMCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNCAyMFYzMy41MzgyIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+"
-            },
-            createBtn: (link, filename) => {
-                let btn = document.createElement("div");
-                btn.indl = false;
-                btn.className = "dlBtn";
-                btn.setAttribute("role", "button");
-                btn.title = "内置下载";
-                btn.addEventListener("mouseenter", event => { event.composedPath()[0].style.backgroundColor = "#86C166"; })
-                btn.addEventListener("mouseleave", event => { event.composedPath()[0].style.backgroundColor = "transparent"; })
-                btn.style = "-webkit-tap-highlight-color: transparent;position:relative;display: flex;flex-direction: row;margin: 4px;height: 32px;border: 1px solid #666;border-radius: 4px;background-color: #ffffff;cursor: pointer;transition: background-color 0.5s;"
-                let dlicon = document.createElement("img");
-                dlicon.alt = "内置下载"
-                dlicon.style = "margin: 2px;width: 28px;height: 28px;transition: filter 0.5s;"
-                btn.appendChild(dlicon);
-                let dltitle = document.createElement("h3");
-                dltitle.style = "margin:0px;text-align: center;width: 100%;transition: color 0.5s;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;";
-                dltitle.innerText = "内置下载";
-                btn.appendChild(dltitle);
-                dlicon.src = blobBtn.IconPack.down;
-                let progress = document.createElement("div");
-                progress.style = "position: absolute;top: 0;bottom: 0;left: 0;background-color: #A8D8B9;z-index: -1;width:0%;transition: width 0.25s ease-in-out,opacity 0.25s,background-color 1s;"
-                btn.appendChild(progress);
-                var xhr = new XMLHttpRequest();
-                xhr.responseType = "blob";
-                xhr.onprogress = event => {
-                    if (event.loaded && event.total) {
-                        var percent = String(Number(event.loaded) / Number(event.total) * 100).substring(0, 4);
-                        dltitle.innerText = "正在下载" + percent + "%";
-                        progress.style.width = percent + "%";
-                    }
-                };
-                xhr.onload = () => {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            let eleLink = document.createElement('a');
-                            eleLink.download = filename;
-                            eleLink.style.display = 'none';
-                            const bloburl = URL.createObjectURL(xhr.response);
-                            eleLink.href = bloburl;
-                            document.body.appendChild(eleLink);
-                            eleLink.click();
-                            document.body.removeChild(eleLink);
-                            dltitle.innerText = "下载成功";
-                            dlicon.src = blobBtn.IconPack.down;
-                            btn.style.backgroundColor = "#86C166";
-                            window.URL.revokeObjectURL(bloburl)
-                        } else {
-                            dltitle.innerText = "下载失败:" + xhr.status;
-                            dlicon.src = blobBtn.IconPack.fail;
-                            btn.style.backgroundColor = "#F17C67";
-                        }
-                        btn.indl = false;
-                    }
-                }
-                xhr.onerror = () => {
-                    dltitle.innerText = "连接失败";
-                    dlicon.src = blobBtn.IconPack.fail;
-                    btn.style.backgroundColor = "#F17C67";
-                }
-                btn.addEventListener("click", () => {
-                    if (!btn.indl) {
-                        btn.indl = true;
-                        xhr.open('GET', link, true)
-                        xhr.send()
-                        dlicon.src = blobBtn.IconPack.load;
-                        dltitle.innerText = "正在下载";
-                    }
-                })
-                return btn;
-            }
-        }
-        const sleep = delay => new Promise((resolve) => setTimeout(resolve, delay));
-        const loadScriptAsync = link => {
-            return new Promise(resolve => {
-                let script = document.createElement("script");
-                script.src = link;
-                script.onload = resolve;
-                script.crossOrigin = "anonymous";
-                document.body.appendChild(script);
-            });
-        };
-        window.addEventListener("message", async (event) => {
-            console.log(event.data)
-            switch (event.data) {
-                case "old": {
-                    location.href = "./legacy";
-                    break;
-                };
-                case "privacy": {
-                    showFrameSet('./privacy.html');
-                    break;
-                };
-            }
-        }, false);
-        //顶栏
-        const msg = {
-            restore: () => {
-                const info = document.createElement("p");
-                info.className = "actBtn";
-                info.style.width = "24px";
-                info.style.backgroundRepeat = "round";
-                info.style.backgroundImage = "url(./icon/info.svg)";
-                info.tabIndex = 0;
-                info.setAttribute("aria-label", "关于");
-                info.onclick = () => {
-                    showFrameSet('./about.html');
-                };
-                const history = document.createElement("p");
-                history.className = "actBtn";
-                history.style.width = "24px";
-                history.style.backgroundRepeat = "round";
-                history.style.backgroundImage = "url(./icon/history.svg)";
-                history.tabIndex = 0;
-                history.setAttribute("aria-label", "历史记录");
-                history.onclick = () => {
-                    showFrameSet('./history.html');
-                };
-                return msg.change("城通网盘解析器~", "./icon.webp", null, [history, info]);
-            },
-            change: (msg, icon, color, actions) => {
-                document.getElementById("msgText").innerText = msg;
-                document.getElementById("msgIcon").style.backgroundImage = icon ? `url(${icon})` : "none";
-                document.getElementById("topMsg").style.backgroundColor = color ? color : "#FFFFFF";
-                document.getElementById("actZone").innerHTML = "";
-                actions ? actions.forEach(btn => {
-                    document.getElementById("actZone").appendChild(btn);
-                    btn.setAttribute("role", "button");
-                    if (!btn.id) {
-                        btn.id = "actBtn" + Math.random().toString(36).substr(2);
-                    };
-                    //let label = document.createElement("label");
-                    //label.setAttribute("for", btn.id);
-                    //label.innerText = btn.getAttribute("aria-label");
-                    //document.getElementById("actZone").appendChild(label);
-                }) : null;
-            },
-            hide: () => {
-                document.getElementById("topMsg").style.display = "none";
-            },
-            show: () => {
-                document.getElementById("topMsg").style.display = "flex";
-            },
-        };
+        });
         const emptyfile = () => {
             document.getElementById("filename").value = "";
             document.getElementById("dllink").value = "";
@@ -745,48 +476,42 @@
                 document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[2]);
             }
         };
-        document.getElementById("closead").onclick = async () => {
-            for (let i = 0; i < 1000;) {
-                document.getElementById("adinfo").innerText = "正在关闭广告..." + Number(i) / Number(10) + "%";
-                i += Math.round(Math.random() * 50);
-                await sleep(Math.round(Math.random() * 250));
-            }
-            document.getElementById("ads").parentElement.removeChild(document.getElementById("ads"));
-            await sleep(50);
-            alert("广告已关闭！");
-        };
         document.getElementById("link").addEventListener("change", () => {
             let link = document.getElementById("link").value;
             if (link.startsWith("asaki+")) {
                 link = decodeURI(atob(link.substr(6))).split("|||");
                 document.getElementById("link").value = link[0];
                 document.getElementById("pass").value = link[1];
-                msg.change("已识别Asaki口令", "./icon/password.svg", "#86C166");
+                Module.msg.change("已识别Asaki口令", "./icon/password.svg", "#86C166");
                 return true;
             };
             if (link.startsWith("xtc")) {
                 document.getElementById("link").value = link.substr(3, link.lastIndexOf("-") - 3);
                 document.getElementById("pass").value = link.substr(link.lastIndexOf("-") + 1);
-                msg.change("已识别小通口令", "./icon/password.svg", "#86C166");
+                Module.msg.change("已识别小通口令", "./icon/password.svg", "#86C166");
             };
             if (link.indexOf("http") != -1) {
-                link = new URL(link);
+                link = new URL(link.substr(link.indexOf("http")));
                 console.log(link);
                 if (link.pathname.startsWith("/d")) {
-                    msg.change("文件夹解析正在开发中", "./icon/error.svg", "rgba(232,48,21,0.6)");
+                    Module.msg.change("文件夹解析正在开发中", "./icon/error.svg", "rgba(232,48,21,0.6)");
                     return false;
                 }
                 document.getElementById("link").value = link.pathname.substr(link.pathname.substr(1).indexOf("/") + 2);
                 if (link.searchParams.get("p")) {
-                    msg.change("已识别密码", "./icon/password.svg", "#86C166");
+                    Module.msg.change("已识别密码", "./icon/password.svg", "#86C166");
                     document.getElementById("autopass").style.filter = "none";
-                    document.getElementById("pass").value = link.searchParams.get("p");
-                    setTimeout(msg.restore, 3000);
+                    let pass = link.searchParams.get("p");
+                    if (pass.indexOf("(") != -1) {
+                        pass = pass.substr(0, pass.indexOf("(")).trim();
+                    };
+                    document.getElementById("pass").value = pass;
+                    setTimeout(Module.msg.restore, 3000);
                 };
             };
             if (document.getElementById("link").value.split("-").length < 2) {
-                msg.change("无效的地址或ID", "./icon/error.svg", "rgba(232,48,21,0.6)");
-                setTimeout(msg.restore, 3000);
+                Module.msg.change("无效的地址或ID", "./icon/error.svg", "rgba(232,48,21,0.6)");
+                setTimeout(Module.msg.restore, 3000);
             };
         });
         document.getElementById("pass").addEventListener("change", () => {
@@ -797,7 +522,7 @@
         })
         document.getElementById("autopass").onclick = async () => {
             document.getElementById("pass").value = "547873715";
-            await sleep(10);
+            await util.sleep(10);
             document.getElementById("autopass").style.filter = "invert(65%) sepia(20%) saturate(754%) hue-rotate(95deg) brightness(90%) contrast(89%)";
         };
         document.getElementById("tokenhelp").onclick = () => {
@@ -815,7 +540,7 @@
             document.getElementById("fileinfo").style.display = "block";
             document.getElementById("nameloading").style.display = "block";
             document.getElementById("linkloading").style.display = "block";
-            let file = await ctfile.getByID(document.getElementById("link").value, document.getElementById("pass").value, getToken(), file => {
+            let file = await Module.ctfile.getByID(document.getElementById("link").value, document.getElementById("pass").value, getToken(), file => {
                 document.getElementById("nameloading").style.display = "none";
                 document.getElementById("filename").value = file.name;
                 document.getElementById("size").innerText = "体积：" + file.size;
@@ -824,73 +549,32 @@
             document.getElementById("nameloading").style.display = "none";
             document.getElementById("linkloading").style.display = "none";
             if (file.success) {
-                const sec_to_time = s => {
-                    let t;
-                    if (s > -1) {
-                        let hour = Math.floor(s / 3600);
-                        let min = Math.floor(s / 60) % 60;
-                        let sec = s % 60;
-                        if (hour < 10) {
-                            t = '0' + hour + ":";
-                        } else {
-                            t = hour + ":";
-                        }
-
-                        if (min < 10) { t += "0"; }
-                        t += min + ":";
-                        if (sec < 10) { t += "0"; }
-                        t += sec.toFixed(0);
-                    }
-                    return t;
-                }
-                function covertSizeToByte(size) {
-                    let temp = size;
-                    if (size.endsWith('KB')) {
-                        return parseFloat(temp.replace('KB', '')) * 1024
-                    }
-                    if (size.endsWith('MB')) {
-                        return parseFloat(temp.replace('MB', '')) * 1024 * 1024
-                    }
-                    if (size.endsWith('GB')) {
-                        return parseFloat(temp.replace('GB', '')) * 1024 * 1024 * 1024
-                    }
-                    if (size.endsWith('B')) {
-                        return parseFloat(temp.replace('B', ''))
-                    }
-                };
-                function bytesToSize(bytes) {
-                    if (bytes === '0' || bytes === 0) return '0B';
-                    var k = 1024;
-                    sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-                    i = Math.floor(Math.log(bytes) / Math.log(k));
-                    return parseFloat(bytes / Math.pow(k, i)).toFixed(2) + sizes[i];                                                                                                      //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-                };
                 document.getElementById("dllink").value = file.link;
                 document.getElementById("downdiv").style.display = "flex";
                 document.getElementById("downdiv").style.flexWrap = "wrap";
-                document.getElementById("downdiv").appendChild(blobBtn.createBtn(file.link, file.name));
+                document.getElementById("downdiv").appendChild(Module.blobBtn.createBtn(file.link, file.name));
 
                 if (document.getElementById("downdiv").children[2]) {
                     document.getElementById("downdiv").children[2].tabIndex = 0;
                 }
                 let link = new URL(file.link);
                 let speed = Number(link.searchParams.get("spd")) * Number(link.searchParams.get("limit"));
-                document.getElementById("speed").innerText = "限速：" + (speed ? bytesToSize(speed) + "/s" : "无上限");
-                let time = sec_to_time(covertSizeToByte(file.size) / Number(speed));
+                document.getElementById("speed").innerText = "限速：" + (speed ? util.bytesToSize(speed) + "/s" : "无上限");
+                let time = util.sec_to_time(util.covertSizeToByte(file.size) / Number(speed));
                 document.getElementById("reqtime").innerText = "耗时：" + (speed ? time : "取决于网速");
                 document.getElementById("openlink").onclick = () => { window.open(file.link, "_blank") };
                 document.getElementById("copylink").onclick = () => {
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(file.link).then(() => {
-                            msg.change("已复制链接", "./icon/copy.svg", "#86C166")
-                            setTimeout(msg.restore, 3000);
+                            Module.msg.change("已复制链接", "./icon/copy.svg", "#86C166")
+                            setTimeout(Module.msg.restore, 3000);
                         }, () => {
-                            msg.change("复制失败，请尝试手动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
+                            Module.msg.change("复制失败，请尝试手动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
                             document.getElementById("dllink").focus();
                             document.getElementById("dllink").select();
                         })
                     } else {
-                        msg.change("浏览器不支持自动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
+                        Module.msg.change("浏览器不支持自动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
                         document.getElementById("dllink").focus();
                         document.getElementById("dllink").select();
                     }
@@ -914,10 +598,12 @@
                     localStorage.setItem("store", JSON.stringify([record]))
                 }
             } else {
-                msg.change(file.errormsg, "./icon/error.svg", "rgba(232,48,21,0.6)");
+                Module.msg.change(file.errormsg, "./icon/error.svg", "rgba(232,48,21,0.6)");
                 document.getElementById("fileinfo").style.display = "none";
-                setTimeout(msg.restore, 5000);
+                setTimeout(Module.msg.restore, 5000);
             }
+            //第一次解析后展示广告
+            Module.adLoader.lazyinit();
         };
         document.getElementById("cloudParse").onclick = async () => {
 

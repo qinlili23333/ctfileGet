@@ -8,6 +8,11 @@
             "src": "icon.png",
             "sizes": "1024x1024",
             "type": "image/png"
+        },
+        {
+            "src": "icon.webp",
+            "sizes": "1024x1024",
+            "type": "image/webp"
         }
     ],
     "start_url": "/",
