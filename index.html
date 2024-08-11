@@ -447,47 +447,24 @@
 
             </div>
         </div>
-        <script>
-            window.addEventListener('DOMContentLoaded', async (event) => {
-                Module.msg.restore();
-                ModuleLoader.loadRemote("homeAddon");
-                const buildToken = () => {
-                    let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                    document.getElementById("token").value = token;
-                    localStorage.setItem("token", token);
-                    return token;
-                }
-                document.getElementById("token").value = localStorage.getItem("token") ? (localStorage.getItem("token").length ? localStorage.getItem("token") : buildToken()) : buildToken();
-                if (location.search) {
-                    let url = new URLSearchParams(location.search);
-                    if (url.get("file")) {
-                        document.getElementById("link").value = url.get("file");
-                        if (url.get("pass")) {
-                            document.getElementById("pass").value = url.get("pass");
-                        }
-                        document.getElementById("localParse").click();
-                    }
-                }
-            });
-        </script>
     </div>
 
     <script>
-
-        window.addEventListener("message", async (event) => {
-            console.log(event.data)
-            switch (event.data) {
-                case "old": {
-                    location.href = "./legacy";
-                    break;
-                };
-                case "privacy": {
-                    Module.yuni.showFrame('./privacy.html');
-                    break;
-                };
+        window.addEventListener('DOMContentLoaded', async (event) => {
+            Module.msg.restore();
+            ModuleLoader.loadRemote("homeAddon");
+            document.getElementById("token").value = localStorage.getItem("token") ? (localStorage.getItem("token").length ? localStorage.getItem("token") : Module.ctfile.buildToken()) : Module.ctfile.buildToken();
+            if (location.search) {
+                let url = new URLSearchParams(location.search);
+                if (url.get("file")) {
+                    document.getElementById("link").value = url.get("file");
+                    if (url.get("pass")) {
+                        document.getElementById("pass").value = url.get("pass");
+                    }
+                    document.getElementById("localParse").click();
+                }
             }
-        }, false);
-
+        });
         const emptyfile = () => {
             document.getElementById("filename").value = "";
             document.getElementById("dllink").value = "";
@@ -499,16 +476,6 @@
             if (document.getElementById("downdiv").children[2]) {
                 document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[2]);
             }
-        };
-        document.getElementById("closead").onclick = async () => {
-            for (let i = 0; i < 1000;) {
-                document.getElementById("adinfo").innerText = "正在关闭广告..." + Number(i) / Number(10) + "%";
-                i += Math.round(Math.random() * 50);
-                await util.sleep(Math.round(Math.random() * 250));
-            }
-            document.getElementById("ads").parentElement.removeChild(document.getElementById("ads"));
-            await util.sleep(50);
-            alert("广告已关闭！");
         };
         document.getElementById("link").addEventListener("change", () => {
             let link = document.getElementById("link").value;

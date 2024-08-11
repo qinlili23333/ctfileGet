@@ -21,7 +21,17 @@ ModuleCache.homeAddon = {
                     Module.msg.restore();
                 };
                 Module.msg.change("请阅读并同意隐私协议", "./icon/privacy.svg", "#FB966E", [read]);
-            }
+            };
+            document.getElementById("closead").onclick = async () => {
+                for (let i = 0; i < 1000;) {
+                    document.getElementById("adinfo").innerText = "正在关闭广告..." + Number(i) / Number(10) + "%";
+                    i += Math.round(Math.random() * 50);
+                    await util.sleep(Math.round(Math.random() * 250));
+                }
+                document.getElementById("ads").parentElement.removeChild(document.getElementById("ads"));
+                await util.sleep(50);
+                alert("广告已关闭！");
+            };
         },
         lazyinit: async () => {
             if (Module.adLoader.done) return;

@@ -1,6 +1,12 @@
 (() => {
     const ctfile = {
-        version: () => { return "2.6.5" },
+        version: () => { return "2.6.6" },
+        buildToken: () => {
+            let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            document.getElementById("token").value = token;
+            localStorage.setItem("token", token);
+            return token;
+        },
         getByLink: (link, password, token, firstcallback) => {
             return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2), token, firstcallback);
         },
