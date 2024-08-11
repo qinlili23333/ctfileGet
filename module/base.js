@@ -25,6 +25,47 @@ const util = {
         style.appendChild(document.createTextNode(code))
         var head = document.getElementsByTagName('head')[0]
         head.appendChild(style)
+    },
+    sec_to_time: s => {
+        let t;
+        if (s > -1) {
+            let hour = Math.floor(s / 3600);
+            let min = Math.floor(s / 60) % 60;
+            let sec = s % 60;
+            if (hour < 10) {
+                t = '0' + hour + ":";
+            } else {
+                t = hour + ":";
+            }
+
+            if (min < 10) { t += "0"; }
+            t += min + ":";
+            if (sec < 10) { t += "0"; }
+            t += sec.toFixed(0);
+        }
+        return t;
+    },
+    covertSizeToByte: size => {
+        let temp = size;
+        if (size.endsWith('KB')) {
+            return parseFloat(temp.replace('KB', '')) * 1024
+        }
+        if (size.endsWith('MB')) {
+            return parseFloat(temp.replace('MB', '')) * 1024 * 1024
+        }
+        if (size.endsWith('GB')) {
+            return parseFloat(temp.replace('GB', '')) * 1024 * 1024 * 1024
+        }
+        if (size.endsWith('B')) {
+            return parseFloat(temp.replace('B', ''))
+        }
+    },
+    bytesToSize: bytes => {
+        if (bytes === '0' || bytes === 0) return '0B';
+        var k = 1024;
+        sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat(bytes / Math.pow(k, i)).toFixed(2) + sizes[i];                                                                                                      //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     }
 }
 let ModuleCache = {};
@@ -147,14 +188,6 @@ let Module = {
             Module.recent.render();
         }
     },
-    pwa: {
-        init: () => {
-            if (navigator.serviceWorker && !navigator.serviceWorker.controller) {
-                navigator.serviceWorker.register('sw.js');
-            }
-        }
-
-    },
     msg: {
         restore: () => {
             const info = document.createElement("p");
@@ -165,7 +198,7 @@ let Module = {
             info.tabIndex = 0;
             info.setAttribute("aria-label", "关于");
             info.onclick = () => {
-                Module.yuni.showFrame('./about.html');
+                Module.yuni.showNative('about');
             };
             const history = document.createElement("p");
             history.className = "actBtn";
@@ -205,7 +238,7 @@ let Module = {
     },
     yuni: {
         lazyinit: () => {
-            util.loadCssCode(`#setFrame {
+            util.loadCssCode(`#yuniFrame {
 max-width: 600px;
 margin: auto;
 padding: 100%;
@@ -276,18 +309,18 @@ right: 0px;
             const framediv = `<div id="yuniContainer">
 <div id="yuni"> 
 <img role="button" aria-label="关闭弹出页面" id="closeBtn" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDQ4IDQ4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik02IDlMNDIgOSIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik02IDE5TDQyIDE5IiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTYgMjZMMjQgNDBMNDIgMjYiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=">
-<iframe title="弹出页面" id="setFrame" frameborder="0"></iframe>
+<iframe title="弹出页面" id="yuniFrame" frameborder="0"></iframe>
 <img alt="加载中" id="loading" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgd2lkdGg9JzEyMHB4JyBoZWlnaHQ9JzEyMHB4JyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+DQogICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9Im5vbmUiIGNsYXNzPSJiayI+PC9yZWN0Pg0KICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQwIiBzdHJva2U9IiNEQ0FDODkiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJidXR0Ij4NCiAgICAgICAgPGFuaW1hdGUgYXR0cmlidXRlTmFtZT0ic3Ryb2tlLWRhc2hvZmZzZXQiIGR1cj0iMnMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiBmcm9tPSIwIiB0bz0iNTAyIj48L2FuaW1hdGU+DQogICAgICAgIDxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9InN0cm9rZS1kYXNoYXJyYXkiIGR1cj0iMnMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiB2YWx1ZXM9IjE1MC42IDEwMC40OzEgMjUwOzE1MC42IDEwMC40Ij48L2FuaW1hdGU+DQogICAgPC9jaXJjbGU+DQo8L3N2Zz4=">
 </div>
 </div>`
             document.body.insertAdjacentHTML('beforeend', framediv);
             //弹出
             const rebuildFrame = url => {
-                if (document.getElementById("setFrame")) {
-                    document.getElementById("yuni").removeChild(document.getElementById("setFrame"));
+                if (document.getElementById("yuniFrame")) {
+                    document.getElementById("yuni").removeChild(document.getElementById("yuniFrame"));
                 };
                 let newFrame = document.createElement("iframe");
-                newFrame.id = "setFrame";
+                newFrame.id = "yuniFrame";
                 newFrame.frameBorder = 0;
                 document.getElementById("closeBtn").insertAdjacentElement("afterend", newFrame)
                 newFrame.src = url;
@@ -321,21 +354,48 @@ right: 0px;
                 document.getElementById("loading").style.display = "block";
                 rebuildFrame(url);
                 if (wide) {
-                    document.getElementById("setFrame").style.maxWidth = "100vw";
+                    document.getElementById("yuniFrame").style.maxWidth = "100vw";
                 }
-            }
+            };
+            Module.yuni.showNative = async (url, wide) => {
+                //使用iframe渲染设置
+                document.getElementById("yuniContainer").style.display = "block";
+                await util.sleep(1);
+                document.getElementById("yuniContainer").style.opacity = 1;
+                document.getElementById("yuni").style.marginTop = "10vh";
+                document.getElementById("loading").style.display = "block";
+                if (document.getElementById("yuniFrame")) {
+                    document.getElementById("yuni").removeChild(document.getElementById("yuniFrame"));
+                };
+                let newFrame = document.createElement("div");
+                newFrame.id = "yuniFrame";
+                newFrame.style.overflow = "auto";
+                document.getElementById("closeBtn").insertAdjacentElement("afterend", newFrame);
+                fetch("/yuni/" + url + ".yuniml").then(response => response.text()).then(data => {
+                    newFrame.innerHTML = data;
+                    newFrame.style.padding = "0px";
+                    document.getElementById("loading").style.display = "none";
+                });
+                if (wide) {
+                    document.getElementById("yuniFrame").style.maxWidth = "100vw";
+                }
+            };
             document.getElementById("closeBtn").addEventListener("click", async (event) => {
                 event.stopPropagation();
                 document.getElementById("yuni").style.marginTop = "100vh";
                 document.getElementById("yuniContainer").style.opacity = 0;
                 await util.sleep(500);
                 document.getElementById("yuniContainer").style.display = "none";
-                document.getElementById("yuni").removeChild(document.getElementById("setFrame"));
+                document.getElementById("yuni").removeChild(document.getElementById("yuniFrame"));
             })
         },
         showFrame: async (url, wide) => {
             Module.yuni.lazyinit();
             Module.yuni.showFrame(url, wide);
+        },
+        showNative: async (url, wide) => {
+            Module.yuni.lazyinit();
+            Module.yuni.showNative(url, wide);
         }
     },
     blobBtn: {

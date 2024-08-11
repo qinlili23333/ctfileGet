@@ -1,4 +1,12 @@
 ModuleCache.homeAddon = {
+    pwa: {
+        init: () => {
+            if (navigator.serviceWorker && !navigator.serviceWorker.controller) {
+                navigator.serviceWorker.register('sw.js');
+            }
+        }
+
+    },
     adLoader: {
         done: false,
         init: () => {

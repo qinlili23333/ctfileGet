@@ -332,6 +332,25 @@
             height: 32px;
             overflow: hidden;
         }
+
+        button {
+            font-size: 1.3em;
+            padding: 3px;
+            border: 1px solid #999 !important;
+            background-color: white;
+            border-radius: 4px !important;
+            transition: background-color 0.25s ease-in-out;
+            margin: 3px;
+            min-width: 60%;
+        }
+
+        button:hover {
+            background-color: #ccc;
+        }
+
+        button:active {
+            background-color: #999;
+        }
     </style>
 </head>
 
@@ -564,47 +583,6 @@
             document.getElementById("nameloading").style.display = "none";
             document.getElementById("linkloading").style.display = "none";
             if (file.success) {
-                const sec_to_time = s => {
-                    let t;
-                    if (s > -1) {
-                        let hour = Math.floor(s / 3600);
-                        let min = Math.floor(s / 60) % 60;
-                        let sec = s % 60;
-                        if (hour < 10) {
-                            t = '0' + hour + ":";
-                        } else {
-                            t = hour + ":";
-                        }
-
-                        if (min < 10) { t += "0"; }
-                        t += min + ":";
-                        if (sec < 10) { t += "0"; }
-                        t += sec.toFixed(0);
-                    }
-                    return t;
-                }
-                function covertSizeToByte(size) {
-                    let temp = size;
-                    if (size.endsWith('KB')) {
-                        return parseFloat(temp.replace('KB', '')) * 1024
-                    }
-                    if (size.endsWith('MB')) {
-                        return parseFloat(temp.replace('MB', '')) * 1024 * 1024
-                    }
-                    if (size.endsWith('GB')) {
-                        return parseFloat(temp.replace('GB', '')) * 1024 * 1024 * 1024
-                    }
-                    if (size.endsWith('B')) {
-                        return parseFloat(temp.replace('B', ''))
-                    }
-                };
-                function bytesToSize(bytes) {
-                    if (bytes === '0' || bytes === 0) return '0B';
-                    var k = 1024;
-                    sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-                    i = Math.floor(Math.log(bytes) / Math.log(k));
-                    return parseFloat(bytes / Math.pow(k, i)).toFixed(2) + sizes[i];                                                                                                      //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-                };
                 document.getElementById("dllink").value = file.link;
                 document.getElementById("downdiv").style.display = "flex";
                 document.getElementById("downdiv").style.flexWrap = "wrap";
@@ -615,8 +593,8 @@
                 }
                 let link = new URL(file.link);
                 let speed = Number(link.searchParams.get("spd")) * Number(link.searchParams.get("limit"));
-                document.getElementById("speed").innerText = "限速：" + (speed ? bytesToSize(speed) + "/s" : "无上限");
-                let time = sec_to_time(covertSizeToByte(file.size) / Number(speed));
+                document.getElementById("speed").innerText = "限速：" + (speed ? util.bytesToSize(speed) + "/s" : "无上限");
+                let time = util.sec_to_time(util.covertSizeToByte(file.size) / Number(speed));
                 document.getElementById("reqtime").innerText = "耗时：" + (speed ? time : "取决于网速");
                 document.getElementById("openlink").onclick = () => { window.open(file.link, "_blank") };
                 document.getElementById("copylink").onclick = () => {
