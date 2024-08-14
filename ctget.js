@@ -1,6 +1,6 @@
 (() => {
     const ctfile = {
-        version: () => { return "2.6.6" },
+        version: () => { return "2.6.7" },
         buildToken: () => {
             let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
             document.getElementById("token").value = token;
@@ -95,7 +95,7 @@
             }
         }
     };
-    if (ModuleLoader.useRedbankLoaderGlobal) {
+    if (window.ModuleLoader && ModuleLoader.useRedbankLoaderGlobal) {
         ModuleLoader.loadLocal({ ctfile });
     } else {
         window.ctfile = ctfile;
