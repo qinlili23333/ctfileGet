@@ -85,7 +85,7 @@ const util = {
     }
 }
 let ModuleCache = {};
-const ModuleLoader = {
+window.ModuleLoader = {
     useRedbankLoaderGlobal: true,
     pendingCalls: [],
     loadedRemote: [],
@@ -142,7 +142,7 @@ const ModuleLoader = {
         }
     }
 }
-let Module = {
+window.Module = {
     autoinit: {
         initEverything: async () => {
             Module.autoinit.initList(Object.keys(Module));

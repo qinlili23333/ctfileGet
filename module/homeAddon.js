@@ -46,7 +46,7 @@ ModuleCache.homeAddon = {
                             if (this.status === 200) {
                                 if (!this.responseURL.startsWith("https")) {
                                     console.log("广告被拦截");
-                                    loadSelfAd();
+                                    Module.adLoader.loadSelfAd();
                                 } else {
                                     (adsbygoogle = window.adsbygoogle || []).push({});
                                     util.loadScriptAsync("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1806614386308377");
