@@ -140,7 +140,9 @@
             overflow-y: overlay;
         }
 
-        input[role="textbox"] {
+        input[role="textbox"],
+        select[role="listbox"] {
+            appearance: none;
             padding-right: 40px;
             height: 26px;
             width: 100%;
@@ -386,6 +388,17 @@
                 <p tabindex="0" id="tokenhelp" role="button" alt="登录" class="inputright"
                     style="background-image:url(./icon/login.svg);font-size: 0;">登录</p>
             </div>
+            <div aria-labelledby="节点" class="inputdiv">
+                <select role="listbox" tabindex="0" id="node" name="Node" placeholder="首选节点">
+                    <option value="dx">电信</option>
+                    <option value="yd">移动</option>
+                    <option value="lt">联通</option>
+                    <option value="us">北美</option>
+                </select>
+                <label for="node">首选节点</label>
+                <p tabindex="0" id="nodehelp" role="button" alt="选择首选节点" class="inputright"
+                    style="background-image:url(./icon/down.svg);font-size: 0;pointer-events: none;">登录</p>
+            </div>
             <div id="parse">
                 <button tabindex="0" role="button" aria-label="本地解析" id="localParse" class="parseBtn"
                     style="width:100%">
@@ -545,7 +558,7 @@
                 document.getElementById("filename").value = file.name;
                 document.getElementById("size").innerText = "体积：" + file.size;
                 document.getElementById("date").innerText = "日期：" + file.time;
-            });
+            }, document.getElementById("node").value);
             document.getElementById("nameloading").style.display = "none";
             document.getElementById("linkloading").style.display = "none";
             if (file.success) {
