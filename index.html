@@ -463,9 +463,158 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', async (event) => {
+            Module.autoinit.initEverything();
             Module.msg.restore();
             ModuleLoader.loadRemote("homeAddon");
-            document.getElementById("token").value = localStorage.getItem("token") ? (localStorage.getItem("token").length ? localStorage.getItem("token") : Module.ctfile.buildToken()) : Module.ctfile.buildToken();
+            //Init token
+            document.getElementById("token").addEventListener("change", () => {
+                Module.pref.set("token", document.getElementById("token").value);
+            })
+            document.getElementById("token").value = Module.pref.get("token") || Module.pref.set("token", Module.ctfile.buildToken());
+            const emptyfile = () => {
+                document.getElementById("filename").value = "";
+                document.getElementById("dllink").value = "";
+                document.getElementById("size").innerText = "体积：加载中...";
+                document.getElementById("date").innerText = "日期：加载中...";
+                document.getElementById("downdiv").style.display = "none";
+                document.getElementById("speed").innerText = "限速：加载中...";
+                document.getElementById("reqtime").innerText = "耗时：加载中...";
+                if (document.getElementById("downdiv").children[2]) {
+                    document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[2]);
+                }
+            };
+            document.getElementById("node").value = Module.pref.get("node") || Module.pref.set("node", "dx");
+            document.getElementById("node").addEventListener("change", event => {
+                Module.pref.set("node", document.getElementById("node").value);
+            });
+            document.getElementById("link").addEventListener("change", () => {
+                let link = document.getElementById("link").value;
+                if (link.startsWith("asaki+")) {
+                    link = decodeURI(atob(link.substr(6))).split("|||");
+                    document.getElementById("link").value = link[0];
+                    document.getElementById("pass").value = link[1];
+                    Module.msg.change("已识别Asaki口令", "./icon/password.svg", "#86C166");
+                    return true;
+                };
+                if (link.startsWith("xtc")) {
+                    document.getElementById("link").value = link.substr(3, link.lastIndexOf("-") - 3);
+                    document.getElementById("pass").value = link.substr(link.lastIndexOf("-") + 1);
+                    Module.msg.change("已识别小通口令", "./icon/password.svg", "#86C166");
+                };
+                if (link.indexOf("http") != -1) {
+                    link = new URL(link.substr(link.indexOf("http")));
+                    console.log(link);
+                    if (link.pathname.startsWith("/d")) {
+                        Module.msg.change("文件夹解析正在开发中", "./icon/error.svg", "rgba(232,48,21,0.6)");
+                        return false;
+                    }
+                    document.getElementById("link").value = link.pathname.substr(link.pathname.substr(1).indexOf("/") + 2);
+                    if (link.searchParams.get("p")) {
+                        Module.msg.change("已识别密码", "./icon/password.svg", "#86C166");
+                        document.getElementById("autopass").style.filter = "none";
+                        let pass = link.searchParams.get("p");
+                        if (pass.indexOf("(") != -1) {
+                            pass = pass.substr(0, pass.indexOf("(")).trim();
+                        };
+                        document.getElementById("pass").value = pass;
+                        setTimeout(Module.msg.restore, 3000);
+                    };
+                };
+                if (document.getElementById("link").value.split("-").length < 2) {
+                    Module.msg.change("无效的地址或ID", "./icon/error.svg", "rgba(232,48,21,0.6)");
+                    setTimeout(Module.msg.restore, 3000);
+                };
+            });
+            document.getElementById("pass").addEventListener("change", () => {
+                document.getElementById("autopass").style.filter = "none";
+            });
+            document.getElementById("autopass").onclick = async () => {
+                document.getElementById("pass").value = "547873715";
+                await util.sleep(10);
+                document.getElementById("autopass").style.filter = "invert(65%) sepia(20%) saturate(754%) hue-rotate(95deg) brightness(90%) contrast(89%)";
+            };
+            document.getElementById("tokenhelp").onclick = () => {
+                location.replace("https://www.ctfile.com/tokenGo.php?token=" + document.getElementById("token").value + "&url=https%3A%2F%2Fwww.ctfile.com%2Fp%2Flogin");
+            }
+            document.getElementById("localParse").onclick = async () => {
+                let getToken = () => {
+                    if (document.getElementById("token").value.length) {
+                        return document.getElementById("token").value;
+                    } else {
+                        return false;
+                    }
+                };
+                emptyfile();
+                document.getElementById("fileinfo").style.display = "block";
+                document.getElementById("nameloading").style.display = "block";
+                document.getElementById("linkloading").style.display = "block";
+                let file = await Module.ctfile.getByID(document.getElementById("link").value, document.getElementById("pass").value, getToken(), file => {
+                    document.getElementById("nameloading").style.display = "none";
+                    document.getElementById("filename").value = file.name;
+                    document.getElementById("size").innerText = "体积：" + file.size;
+                    document.getElementById("date").innerText = "日期：" + file.time;
+                }, document.getElementById("node").value);
+                document.getElementById("nameloading").style.display = "none";
+                document.getElementById("linkloading").style.display = "none";
+                if (file.success) {
+                    document.getElementById("dllink").value = file.link;
+                    document.getElementById("downdiv").style.display = "flex";
+                    document.getElementById("downdiv").style.flexWrap = "wrap";
+                    document.getElementById("downdiv").appendChild(Module.blobBtn.createBtn(file.link, file.name));
+
+                    if (document.getElementById("downdiv").children[2]) {
+                        document.getElementById("downdiv").children[2].tabIndex = 0;
+                    }
+                    let link = new URL(file.link);
+                    let speed = Number(link.searchParams.get("spd")) * Number(link.searchParams.get("limit"));
+                    document.getElementById("speed").innerText = "限速：" + (speed ? util.bytesToSize(speed) + "/s" : "无上限");
+                    let time = util.sec_to_time(util.covertSizeToByte(file.size) / Number(speed));
+                    document.getElementById("reqtime").innerText = "耗时：" + (speed ? time : "取决于网速");
+                    document.getElementById("openlink").onclick = () => { window.open(file.link, "_blank") };
+                    document.getElementById("copylink").onclick = () => {
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(file.link).then(() => {
+                                Module.msg.change("已复制链接", "./icon/copy.svg", "#86C166")
+                                setTimeout(Module.msg.restore, 3000);
+                            }, () => {
+                                Module.msg.change("复制失败，请尝试手动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
+                                document.getElementById("dllink").focus();
+                                document.getElementById("dllink").select();
+                            })
+                        } else {
+                            Module.msg.change("浏览器不支持自动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
+                            document.getElementById("dllink").focus();
+                            document.getElementById("dllink").select();
+                        }
+                    };
+                    const record = {
+                        link: document.getElementById("link").value,
+                        password: document.getElementById("pass").value,
+                        queryTime: new Date().toLocaleString(),
+                        name: file.name,
+                        size: file.size,
+                        time: file.time,
+                    }
+                    const store = localStorage.getItem("store")
+                    let records = JSON.parse(store);
+
+                    if (store && Array.isArray(records)) {
+                        records = records.filter(r => r.link !== record.link)
+                        records.push(record);
+                        localStorage.setItem("store", JSON.stringify(records));
+                    } else {
+                        localStorage.setItem("store", JSON.stringify([record]))
+                    }
+                } else {
+                    Module.msg.change(file.errormsg, "./icon/error.svg", "rgba(232,48,21,0.6)");
+                    document.getElementById("fileinfo").style.display = "none";
+                    setTimeout(Module.msg.restore, 5000);
+                }
+                //第一次解析后展示广告
+                Module.adLoader.lazyinit();
+            };
+
+            //Process query
             if (location.search) {
                 let url = new URLSearchParams(location.search);
                 if (url.get("file")) {
@@ -477,150 +626,6 @@
                 }
             }
         });
-        const emptyfile = () => {
-            document.getElementById("filename").value = "";
-            document.getElementById("dllink").value = "";
-            document.getElementById("size").innerText = "体积：加载中...";
-            document.getElementById("date").innerText = "日期：加载中...";
-            document.getElementById("downdiv").style.display = "none";
-            document.getElementById("speed").innerText = "限速：加载中...";
-            document.getElementById("reqtime").innerText = "耗时：加载中...";
-            if (document.getElementById("downdiv").children[2]) {
-                document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[2]);
-            }
-        };
-        document.getElementById("link").addEventListener("change", () => {
-            let link = document.getElementById("link").value;
-            if (link.startsWith("asaki+")) {
-                link = decodeURI(atob(link.substr(6))).split("|||");
-                document.getElementById("link").value = link[0];
-                document.getElementById("pass").value = link[1];
-                Module.msg.change("已识别Asaki口令", "./icon/password.svg", "#86C166");
-                return true;
-            };
-            if (link.startsWith("xtc")) {
-                document.getElementById("link").value = link.substr(3, link.lastIndexOf("-") - 3);
-                document.getElementById("pass").value = link.substr(link.lastIndexOf("-") + 1);
-                Module.msg.change("已识别小通口令", "./icon/password.svg", "#86C166");
-            };
-            if (link.indexOf("http") != -1) {
-                link = new URL(link.substr(link.indexOf("http")));
-                console.log(link);
-                if (link.pathname.startsWith("/d")) {
-                    Module.msg.change("文件夹解析正在开发中", "./icon/error.svg", "rgba(232,48,21,0.6)");
-                    return false;
-                }
-                document.getElementById("link").value = link.pathname.substr(link.pathname.substr(1).indexOf("/") + 2);
-                if (link.searchParams.get("p")) {
-                    Module.msg.change("已识别密码", "./icon/password.svg", "#86C166");
-                    document.getElementById("autopass").style.filter = "none";
-                    let pass = link.searchParams.get("p");
-                    if (pass.indexOf("(") != -1) {
-                        pass = pass.substr(0, pass.indexOf("(")).trim();
-                    };
-                    document.getElementById("pass").value = pass;
-                    setTimeout(Module.msg.restore, 3000);
-                };
-            };
-            if (document.getElementById("link").value.split("-").length < 2) {
-                Module.msg.change("无效的地址或ID", "./icon/error.svg", "rgba(232,48,21,0.6)");
-                setTimeout(Module.msg.restore, 3000);
-            };
-        });
-        document.getElementById("pass").addEventListener("change", () => {
-            document.getElementById("autopass").style.filter = "none";
-        });
-        document.getElementById("token").addEventListener("change", () => {
-            localStorage.setItem("token", document.getElementById("token").value);
-        })
-        document.getElementById("autopass").onclick = async () => {
-            document.getElementById("pass").value = "547873715";
-            await util.sleep(10);
-            document.getElementById("autopass").style.filter = "invert(65%) sepia(20%) saturate(754%) hue-rotate(95deg) brightness(90%) contrast(89%)";
-        };
-        document.getElementById("tokenhelp").onclick = () => {
-            location.replace("https://www.ctfile.com/tokenGo.php?token=" + document.getElementById("token").value + "&url=https%3A%2F%2Fwww.ctfile.com%2Fp%2Flogin");
-        }
-        document.getElementById("localParse").onclick = async () => {
-            let getToken = () => {
-                if (document.getElementById("token").value.length) {
-                    return document.getElementById("token").value;
-                } else {
-                    return false;
-                }
-            };
-            emptyfile();
-            document.getElementById("fileinfo").style.display = "block";
-            document.getElementById("nameloading").style.display = "block";
-            document.getElementById("linkloading").style.display = "block";
-            let file = await Module.ctfile.getByID(document.getElementById("link").value, document.getElementById("pass").value, getToken(), file => {
-                document.getElementById("nameloading").style.display = "none";
-                document.getElementById("filename").value = file.name;
-                document.getElementById("size").innerText = "体积：" + file.size;
-                document.getElementById("date").innerText = "日期：" + file.time;
-            }, document.getElementById("node").value);
-            document.getElementById("nameloading").style.display = "none";
-            document.getElementById("linkloading").style.display = "none";
-            if (file.success) {
-                document.getElementById("dllink").value = file.link;
-                document.getElementById("downdiv").style.display = "flex";
-                document.getElementById("downdiv").style.flexWrap = "wrap";
-                document.getElementById("downdiv").appendChild(Module.blobBtn.createBtn(file.link, file.name));
-
-                if (document.getElementById("downdiv").children[2]) {
-                    document.getElementById("downdiv").children[2].tabIndex = 0;
-                }
-                let link = new URL(file.link);
-                let speed = Number(link.searchParams.get("spd")) * Number(link.searchParams.get("limit"));
-                document.getElementById("speed").innerText = "限速：" + (speed ? util.bytesToSize(speed) + "/s" : "无上限");
-                let time = util.sec_to_time(util.covertSizeToByte(file.size) / Number(speed));
-                document.getElementById("reqtime").innerText = "耗时：" + (speed ? time : "取决于网速");
-                document.getElementById("openlink").onclick = () => { window.open(file.link, "_blank") };
-                document.getElementById("copylink").onclick = () => {
-                    if (navigator.clipboard) {
-                        navigator.clipboard.writeText(file.link).then(() => {
-                            Module.msg.change("已复制链接", "./icon/copy.svg", "#86C166")
-                            setTimeout(Module.msg.restore, 3000);
-                        }, () => {
-                            Module.msg.change("复制失败，请尝试手动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
-                            document.getElementById("dllink").focus();
-                            document.getElementById("dllink").select();
-                        })
-                    } else {
-                        Module.msg.change("浏览器不支持自动复制", "./icon/copy.svg", "rgba(232,48,21,0.6)");
-                        document.getElementById("dllink").focus();
-                        document.getElementById("dllink").select();
-                    }
-                };
-                const record = {
-                    link: document.getElementById("link").value,
-                    password: document.getElementById("pass").value,
-                    queryTime: new Date().toLocaleString(),
-                    name: file.name,
-                    size: file.size,
-                    time: file.time,
-                }
-                const store = localStorage.getItem("store")
-                let records = JSON.parse(store);
-
-                if (store && Array.isArray(records)) {
-                    records = records.filter(r => r.link !== record.link)
-                    records.push(record);
-                    localStorage.setItem("store", JSON.stringify(records));
-                } else {
-                    localStorage.setItem("store", JSON.stringify([record]))
-                }
-            } else {
-                Module.msg.change(file.errormsg, "./icon/error.svg", "rgba(232,48,21,0.6)");
-                document.getElementById("fileinfo").style.display = "none";
-                setTimeout(Module.msg.restore, 5000);
-            }
-            //第一次解析后展示广告
-            Module.adLoader.lazyinit();
-        };
-        document.getElementById("cloudParse").onclick = async () => {
-
-        };
     </script>
 </body>
 

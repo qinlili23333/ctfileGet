@@ -190,18 +190,7 @@ window.Module = {
         set: (key, value) => {
             Module.pref.data[key] = value;
             Module.pref.sync();
-        },
-        addRecent: (icon, name, url) => {
-            let recent = Module.pref.get("recent") || [];
-            recent.unshift({ icon: icon, name: name, url: url });
-            recent = recent.filter((value, index, self) =>
-                index === self.findIndex((t) => (
-                    t.place === value.place && t.name === value.name
-                ))
-            )
-            recent = recent.slice(0, 50);
-            Module.pref.set("recent", recent);
-            Module.recent.render();
+            return value;
         }
     },
     msg: {
