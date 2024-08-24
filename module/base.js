@@ -376,11 +376,9 @@ right: 0px;
                 if (wide) {
                     document.getElementById("yuniFrame").style.maxWidth = "100vw";
                 }
-                fetch("/yuni/" + url + ".yuniml").then(response => response.text()).then(data => {
-                    util.setInnerHTML(newFrame, data);
-                    newFrame.style.padding = "0px";
-                    document.getElementById("loading").style.display = "none";
-                });
+                util.setInnerHTML(newFrame, await (await fetch("/yuni/" + url + ".yuniml")).text());
+                newFrame.style.padding = "0px";
+                document.getElementById("loading").style.display = "none";
             };
             Module.yuni.close = async () => {
                 document.getElementById("yuni").style.marginTop = "100vh";

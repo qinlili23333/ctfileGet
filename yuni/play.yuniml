@@ -1,0 +1,2 @@
+<video style="width: 100%;max-height: calc(100% - 8px);background-color: transparent;" controls preload="true"
+    id="playVideo">

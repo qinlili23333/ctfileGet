@@ -484,9 +484,9 @@
                 document.getElementById("downdiv").style.display = "none";
                 document.getElementById("speed").innerText = "限速：加载中...";
                 document.getElementById("reqtime").innerText = "耗时：加载中...";
-                document.getElementById("downdiv").children[0].style.display = "none";
-                if (document.getElementById("downdiv").children[3]) {
-                    document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[3]);
+                document.getElementById("playlink").style.display = "none";
+                if (document.getElementById("blobBtn")) {
+                    document.getElementById("blobBtn").parentElement.removeChild(document.getElementById("blobBtn"));
                 }
             };
             document.getElementById("node").value = Module.pref.get("node") || Module.pref.set("node", "dx");
@@ -566,11 +566,10 @@
                     document.getElementById("dllink").value = file.link;
                     document.getElementById("downdiv").style.display = "flex";
                     document.getElementById("downdiv").style.flexWrap = "wrap";
-                    document.getElementById("downdiv").appendChild(Module.blobBtn.createBtn(file.link, file.name));
-
-                    if (document.getElementById("downdiv").children[2]) {
-                        document.getElementById("downdiv").children[2].tabIndex = 0;
-                    }
+                    const btn = Module.blobBtn.createBtn(file.link, file.name)
+                    document.getElementById("downdiv").appendChild(btn);
+                    btn.tabIndex = 0;
+                    btn.id = "blobBtn";
                     let link = new URL(file.link);
                     let speed = Number(link.searchParams.get("spd")) * Number(link.searchParams.get("limit"));
                     document.getElementById("speed").innerText = "限速：" + (speed ? util.bytesToSize(speed) + "/s" : "无上限");
@@ -593,6 +592,15 @@
                             document.getElementById("dllink").select();
                         }
                     };
+                    const previewFormats = ["mp4", "webm", "mp3", "flac", "wav", "opus", "ogg", "aac", "m4a"]
+                    if (file.name.split(".").length > 1 && previewFormats.includes(file.name.split(".")[file.name.split(".").length - 1].toLowerCase())) {
+                        document.getElementById("playlink").style.display = "flex";
+                        document.getElementById("playlink").onclick = async () => {
+                            //在线播放
+                            await Module.yuni.showNative("play", true);
+                            document.getElementById("playVideo").src = file.link;
+                        }
+                    }
                     const record = {
                         link: document.getElementById("link").value,
                         password: document.getElementById("pass").value,
