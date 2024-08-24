@@ -10,7 +10,7 @@ ModuleCache.homeAddon = {
     adLoader: {
         done: false,
         init: () => {
-            if (!localStorage.getItem("agreePrivacy")) {
+            if (!Module.pref.get("agreePrivacy")) {
                 let read = document.createElement("p");
                 read.className = "actBtn";
                 read.innerText = "查看";
@@ -36,7 +36,7 @@ ModuleCache.homeAddon = {
         lazyinit: async () => {
             if (Module.adLoader.done || window.disableAds) return;
             document.getElementById("ads").style.display = "block";
-            if (localStorage.adPref && localStorage.adPref == "any") {
+            if (Module.pref.get("adPref") == "any") {
                 //Anti uBlock Origin
                 (async () => {
                     await util.sleep(2000);

@@ -65,8 +65,6 @@
         },
         buildToken: () => {
             let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-            document.getElementById("token").value = token;
-            localStorage.setItem("token", token);
             return token;
         },
         getByLink: (link, password, token, firstCallback) => {

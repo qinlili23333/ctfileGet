@@ -1,11 +1,14 @@
 <H3>隐私协议</H3>
 <br>
-<p>本站会匿名化的收集你的浏览器信息和网络信息，并上传至Cloudflare Analysis，这些数据会用于改善用户体验，不会以任何形式对外传播。<br>若使用云解析，文件ID和密码将被提交到琴梨梨的Cloudflare
-    Workers，并可能被存储。</p>
+<p>最近更新：24 Augest 2024</p>
+<br>
+<p>本站会匿名化的收集你的浏览器信息和网络信息，并上传至Cloudflare Analysis，这些数据会用于改善用户体验，不会以任何形式对外传播。</p>
 <br>
 <p>本站广告内容默认将由Google
     AdSense提供，Google及其合作伙伴可能会使用第三方Cookies收集信息。你可以通过自定义广告设置来关闭信息收集。<br>你也可以勾选关闭第三方广告，这将增多广告数量，但广告内容将均由琴梨梨自行提供，不再使用Google
     AdSense。</p>
+<br>
+<p>由于数据是匿名化的，你无法请求下载或删除你的数据。</p>
 <br>
 <input id="check" type="checkbox"></input><label for="check">我已阅读并同意隐私协议</label>
 <br>
@@ -21,11 +24,11 @@
 <script>
     document.getElementById("save").onclick = () => {
         if (document.getElementById("check").checked) {
-            localStorage.setItem("agreePrivacy", "true");
+            Module.pref.set("agreePrivacy", true);
             if (document.getElementById("thirdad").checked) {
-                localStorage.setItem("adPref", "self");
+                Module.pref.set("adPref", "self");
             } else {
-                localStorage.setItem("adPref", "any");
+                Module.pref.set("adPref", "any");
             }
             Module.yuni.close();
         } else {
