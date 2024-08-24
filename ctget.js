@@ -1,6 +1,6 @@
 (() => {
     const ctfile = {
-        version: () => { return "2.6.7" },
+        version: () => { return "2.6.8" },
         buildToken: () => {
             let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
             document.getElementById("token").value = token;
@@ -11,6 +11,9 @@
             return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2), token, firstcallback);
         },
         getByID: async (fileid, password, token, firstcallback) => {
+            if (!token) {
+                token = ctfile.buildToken();
+            }
             const origin = () => {
                 //兼容node.js
                 if (document && !(document.location.origin == 'file://')) {
@@ -30,7 +33,7 @@
                     }
                 }
             }
-            jsonText = JSON.parse(await (await fetch("https://webapi.ctfile.com/getfile.php?path=" + path(fileid) + "&f=" + fileid + "&passcode=" + password + "&token=" + token + "false&r=" + Math.random() + "&ref=" + origin(), {
+            jsonText = JSON.parse(await (await fetch("https://webapi.ctfile.com/getfile.php?path=" + path(fileid) + "&f=" + fileid + "&passcode=" + password + "&token=" + token + "&r=" + Math.random() + "&ref=" + origin(), {
                 "headers": {
                     "origin": origin(),
                     "referer": origin()
