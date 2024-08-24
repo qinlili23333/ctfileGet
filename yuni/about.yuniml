@@ -1,7 +1,14 @@
 <div id="settings" style="height:auto;">
     <img alt="城通网盘" src="./icon.webp" style="margin-top:10vh;width:25vw;max-width:160px;border-radius: 20px ;">
     <H2>城通网盘解析器</H2>
-    <H4 id="update" style="padding:10px;">版本：Asaki(V2) 2.4.1</H4>
+    <H4 id="update" style="padding:10px;">Service Worker安装中...</H4>
+    <script>
+        fetch("/getVersionWorker")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("update").innerText = "版本：Asaki(V2) " + data;
+            });
+    </script>
     <H5>程序：<a href="https://qinlili.bid" target="_blank">琴梨梨</a></H5>
     <br>
     <button onclick="window.open('https://github.com/qinlili23333/ctfileGet', '_blank');">
