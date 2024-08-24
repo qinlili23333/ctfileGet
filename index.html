@@ -432,6 +432,11 @@
                 </div>
             </div>
             <div id="downdiv">
+                <div tabindex="0" role="button" title="在线播放" id="playlink" class="dlBtn">
+                    <img alt="在线播放" src="./icon/play.svg" class="dlBtnIcon">
+                    <h3 class="dlBtnTitle">
+                        在线播放</h3>
+                </div>
                 <div tabindex="0" role="button" title="新标签打开" id="openlink" class="dlBtn">
                     <img alt="新标签打开" src="./icon/open.svg" class="dlBtnIcon">
                     <h3 class="dlBtnTitle">
@@ -479,8 +484,9 @@
                 document.getElementById("downdiv").style.display = "none";
                 document.getElementById("speed").innerText = "限速：加载中...";
                 document.getElementById("reqtime").innerText = "耗时：加载中...";
-                if (document.getElementById("downdiv").children[2]) {
-                    document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[2]);
+                document.getElementById("downdiv").children[0].style.display = "none";
+                if (document.getElementById("downdiv").children[3]) {
+                    document.getElementById("downdiv").removeChild(document.getElementById("downdiv").children[3]);
                 }
             };
             document.getElementById("node").value = Module.pref.get("node") || Module.pref.set("node", "dx");
