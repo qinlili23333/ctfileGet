@@ -1,6 +1,6 @@
 (() => {
     const ctfile = {
-        version: () => { return "2.6.8" },
+        version: () => { return "2.6.9" },
         buildToken: () => {
             let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
             return token;
@@ -9,7 +9,7 @@
             console.warn("ctfile.getByLink is deprecated, use ctfile.getByID instead.");
             return ctfile.getByID(link.substring(link.lastIndexOf("/") + 1, (link.lastIndexOf("?") == -1) ? undefined : link.lastIndexOf("?")), (link.lastIndexOf("p=") == -1) ? password : link.substring(link.lastIndexOf("p=") + 2), token, firstcallback);
         },
-        getByID: async (fileid, password, token, firstCallback = ctfile.buildToken(), preferNode = "dx") => {
+        getByID: async (fileid, password, token = ctfile.buildToken(), firstCallback, preferNode = "dx") => {
             const origin = () => {
                 //兼容node.js
                 if (document && !(document.location.origin == 'file://')) {
