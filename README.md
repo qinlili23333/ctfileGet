@@ -10,7 +10,7 @@
 ## 备用节点[ctfile.glitch.qinlili.bid](https://ctfile.glitch.qinlili.bid)  
 ## 应急节点[185-199-111-153.dynamic-ip.hinet.net](http://185-199-111-153.dynamic-ip.hinet.net/)  
 
-## 新增直接跳转模式，地址为redirect.html  
+## 旧版redirect.html仍然可用，但更建议使用新版的一键解析模式  
 传入file（文件id）和pass（密码，可选）即可  
 
 #### 需要直接跳转？看看[这个基于Cloudflare Workers的版本](https://github.com/qinlili23333/ctfile.Workers/)  
