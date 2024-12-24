@@ -609,15 +609,17 @@
                         size: file.size,
                         time: file.time,
                     }
-                    const store = localStorage.getItem("store")
-                    let records = JSON.parse(store);
+                    if (!record.link.startsWith("tempdir")){
+                        const store = localStorage.getItem("store")
+                        let records = JSON.parse(store);
 
-                    if (store && Array.isArray(records)) {
-                        records = records.filter(r => r.link !== record.link)
-                        records.push(record);
-                        localStorage.setItem("store", JSON.stringify(records));
-                    } else {
-                        localStorage.setItem("store", JSON.stringify([record]))
+                        if (store && Array.isArray(records)) {
+                            records = records.filter(r => r.link !== record.link)
+                            records.push(record);
+                            localStorage.setItem("store", JSON.stringify(records));
+                        } else {
+                            localStorage.setItem("store", JSON.stringify([record]))
+                        }
                     }
                 } else {
                     Module.msg.change(file.errormsg, "./icon/error.svg", "rgba(232,48,21,0.6)");
