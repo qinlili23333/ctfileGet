@@ -1,5 +1,5 @@
 var APP_PREFIX = '城通解析';
-var VERSION = '2.4.3';
+var VERSION = '2.4.4';
 var CACHE_NAME = APP_PREFIX + VERSION
 var URLS = []
 
