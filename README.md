@@ -7,8 +7,7 @@
 
 
 ## 在线服务地址[ctfile.qinlili.bid](https://ctfile.qinlili.bid)  
-## 备用节点[ctfile.glitch.qinlili.bid](https://ctfile.glitch.qinlili.bid)  
-## 应急节点[185-199-111-153.dynamic-ip.hinet.net](http://185-199-111-153.dynamic-ip.hinet.net/)  
+## 备用节点[185-199-111-153.dynamic-ip.hinet.net](http://185-199-111-153.dynamic-ip.hinet.net/)  
 
 ## 旧版redirect.html仍然可用，但更建议使用新版的一键解析模式  
 传入file（文件id）和pass（密码，可选）即可  
